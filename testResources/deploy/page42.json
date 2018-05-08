@@ -1,0 +1,16 @@
+{
+	"version":1,
+	"thumbImg":"thumbUrlValue",
+	"postImg":"imageUrlValue",
+	"filename":"htmlfilenameValue",
+	"id":42,
+	"date":"createDateValue",
+	"url":"urlValue",
+	"title":"titleValue",
+	"title_plain":"titlePlainValue",
+	"excerpt":"descriptionValue",
+	"content":"contentValue",
+	"dsq_thread_id":"disqusIdValue",
+	"thumbBase64":"thumbBase64Value",
+	"category":"categoryValue"
+}
