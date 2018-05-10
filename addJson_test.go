@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/ingmardrewing/fs"
-	"github.com/ingmardrewing/staticBlogAdd"
 	"github.com/ingmardrewing/staticIntf"
 	"github.com/ingmardrewing/staticPersistence"
 )
@@ -25,8 +24,8 @@ func TestNewAddJson(t *testing.T) {
 		t.Error("Expected", aj.awsBucket, "to be", bucketName)
 	}
 }
+
 func TestGenerateDto(t *testing.T) {
-	staticBlogAdd.DontUpload()
 	aj := givenAddJson()
 
 	aj.GenerateDto()
