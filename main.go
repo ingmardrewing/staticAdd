@@ -19,7 +19,7 @@ var (
 	fcurl       = false
 )
 
-func init() {
+func readConf() {
 	flag.StringVar(&fconfigPath, "configPath", os.Getenv("BLOG_CONFIG_DIR"), "path to config file")
 	flag.BoolVar(&fcurl, "curl", false, "")
 
@@ -32,9 +32,14 @@ func init() {
 }
 
 func main() {
+	readConf()
+
 	aj := NewAddJson("AWS_BUCKET", conf[0].AddPostDir, conf[0].WritePostDir, conf[0].DefaultMeta.BlogExcerpt, "https://drewing.de/blog/")
 	aj.GenerateDto()
 	aj.WriteToFs()
+
+	fmt.Println("About to clear add post dir", conf[0].AddPostDir)
+	fs.RemoveDirContents(conf[0].AddPostDir)
 
 	if fcurl {
 		title, desc, link, imgUrl := aj.CurlData()
