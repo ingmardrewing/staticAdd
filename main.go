@@ -37,6 +37,7 @@ func main() {
 	aj := NewAddJson("AWS_BUCKET", conf[0].AddPostDir, conf[0].WritePostDir, conf[0].DefaultMeta.BlogExcerpt, "https://drewing.de/blog/")
 	aj.GenerateDto()
 	aj.WriteToFs()
+	fs.RemoveDirContents(conf[0].AddPostDir)
 
 	fmt.Println("About to clear add post dir", conf[0].AddPostDir)
 	fs.RemoveDirContents(conf[0].AddPostDir)

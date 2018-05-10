@@ -3,38 +3,17 @@ package main
 import (
 	"os"
 	"path"
-	"runtime"
 	"testing"
 
 	"github.com/ingmardrewing/fs"
+	"github.com/ingmardrewing/staticIntf"
 	"github.com/ingmardrewing/staticPersistence"
 )
-
-func TestMain(m *testing.M) {
-	setup()
-	code := m.Run()
-	os.Exit(code)
-	tearDown()
-}
-
-func setup() {
-	conf = staticPersistence.ReadConfig("testResources/", "configNew.json")
-}
-
-func tearDown() {
-	filepath := path.Join(getTestFileDirPath(), conf[0].Deploy.TargetDir)
-	fs.RemoveDirContents(filepath)
-}
-
-func getTestFileDirPath() string {
-	_, filename, _, _ := runtime.Caller(1)
-	return path.Dir(filename)
-}
 
 func TestNewAddJson(t *testing.T) {
 	envName := "TEST_AWS_BUCKET"
 	bucketName := "testBucketName"
-	srcDir := "testResources/add"
+	srcDir := "testResources/src/add"
 	destDir := "testResources/deploy"
 	excerpt := "Test 1, 2"
 	url := "https://drewing.de/blog"
@@ -46,8 +25,60 @@ func TestNewAddJson(t *testing.T) {
 	}
 }
 
+func TestGenerateDto(t *testing.T) {
+	aj := givenAddJson()
+
+	aj.GenerateDto()
+	expected := `<a href=\"testResources/src/add/image.png\"><img src=\"testResources/src/add/image-w800.png\" width=\"800\"></a>`
+	actual := aj.dto.Content()
+
+	if actual != expected {
+		t.Error("Expected\n", expected, "\nbut got\n", actual)
+	}
+}
+
 func TestWriteToFs(t *testing.T) {
-	dto := staticPersistence.NewFilledDto(42,
+	aj := givenAddJson()
+	aj.dto = givenPageDto()
+
+	aj.WriteToFs()
+	expected := `{
+	"version":1,
+	"thumbImg":"thumbUrlValue",
+	"postImg":"imageUrlValue",
+	"filename":"htmlfilenameValue",
+	"id":42,
+	"date":"createDateValue",
+	"url":"urlValue",
+	"title":"titleValue",
+	"title_plain":"titlePlainValue",
+	"excerpt":"descriptionValue",
+	"content":"contentValue",
+	"dsq_thread_id":"disqusIdValue",
+	"thumbBase64":"thumbBase64Value",
+	"category":"categoryValue"
+}`
+	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/page42.json"))
+
+	if actual != expected {
+		t.Error("expected\n", expected, "\nbut got\n", actual)
+	}
+}
+
+func givenAddJson() *addJson {
+	envName := "TEST_AWS_BUCKET"
+	bucketName := "testBucketName"
+	srcDir := "testResources/src/add"
+	destDir := "testResources/src/posts"
+	excerpt := "Test 1, 2"
+	url := "https://drewing.de/blog"
+	os.Setenv(envName, bucketName)
+
+	return NewAddJson(envName, srcDir, destDir, excerpt, url)
+}
+
+func givenPageDto() staticIntf.PageDto {
+	return staticPersistence.NewFilledDto(42,
 		"titleValue",
 		"titlePlainValue",
 		"thumbUrlValue",
@@ -63,26 +94,4 @@ func TestWriteToFs(t *testing.T) {
 		"htmlfilenameValue",
 		"thumbBase64Value",
 		"categoryValue")
-
-	envName := "TEST_AWS_BUCKET"
-	bucketName := "testBucketName"
-	srcDir := "testResources/add"
-	destDir := "testResources/deploy"
-	excerpt := "Test 1, 2"
-	url := "https://drewing.de/blog"
-	os.Setenv(envName, bucketName)
-
-	aj := NewAddJson(envName, srcDir, destDir, excerpt, url)
-	aj.dto = dto
-	aj.WriteToFs()
-
-	ba := fs.ReadByteArrayFromFile("testResources/deploy/page42.json")
-
-	actual := len(ba)
-	expected := 375
-
-	if actual != expected {
-		t.Error("Expected byte array to be of length", expected, "but it was", actual)
-	}
-
 }
