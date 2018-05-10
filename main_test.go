@@ -19,14 +19,14 @@ func TestMain(m *testing.M) {
 
 func setup() {
 	os.Setenv("BLOG_CONFIG_DIR", "./testResources/")
+	for _, p := range givenDirPaths() {
+		fs.CreateDir(p)
+	}
 	src := path.Join(getTestFileDirPath(), "testResources/image/test-image.png")
 	dest := path.Join(getTestFileDirPath(), "testResources/src/add/image.png")
 	fs.CopyFile(src, dest)
 	staticBlogAdd.DoUpload(false)
 
-	for _, p := range givenDirPaths() {
-		fs.CreateDir(p)
-	}
 }
 
 func tearDown() {
