@@ -29,7 +29,12 @@ func TestGenerateDto(t *testing.T) {
 	aj := givenAddJson()
 
 	aj.GenerateDto()
-	t.Error(aj.dto)
+	expected := `<a href=\"testResources/src/add/image.png\"><img src=\"testResources/src/add/image-w800.png\" width=\"800\"></a>`
+	actual := aj.dto.Content()
+
+	if actual != expected {
+		t.Error("Expected\n", expected, "\nbut got\n", actual)
+	}
 }
 
 func TestWriteToFs(t *testing.T) {

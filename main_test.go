@@ -23,16 +23,23 @@ func setup() {
 	dest := path.Join(getTestFileDirPath(), "testResources/src/add/image.png")
 	fs.CopyFile(src, dest)
 	staticBlogAdd.DoUpload(false)
+
+	for _, p := range givenDirPaths() {
+		fs.CreateDir(p)
+	}
 }
 
 func tearDown() {
-	paths := []string{
-		path.Join(getTestFileDirPath(), conf[0].AddPostDir),
-		path.Join(getTestFileDirPath(), conf[0].Src[0].Dir)}
-	for _, p := range paths {
+	for _, p := range givenDirPaths() {
 		fs.RemoveDirContents(p)
 	}
 	staticBlogAdd.DoUpload(true)
+}
+
+func givenDirPaths() []string {
+	return []string{
+		path.Join(getTestFileDirPath(), "testResources/src/add/"),
+		path.Join(getTestFileDirPath(), "testResources/src/posts/")}
 }
 
 func getTestFileDirPath() string {
