@@ -45,7 +45,7 @@ func main() {
 	if fcurl {
 		title, desc, link, imgUrl := aj.CurlData()
 		tagsCsv := strings.Join(curl.TAGS, ",")
-		cmd := curl.Command(title, desc, link, imgUrl, tagsCsv)
-		fmt.Println(cmd)
+		json := curl.Json(title, desc, link, imgUrl, tagsCsv)
+		fmt.Println(json)
 	}
 }
