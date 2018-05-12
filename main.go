@@ -16,12 +16,10 @@ var (
 	conf        []staticPersistence.JsonConfig
 	configFile  = "configNew.json"
 	fconfigPath = ""
-	fcurl       = false
 )
 
 func readConf() {
 	flag.StringVar(&fconfigPath, "configPath", os.Getenv("BLOG_CONFIG_DIR"), "path to config file")
-	flag.BoolVar(&fcurl, "curl", false, "")
 
 	exists, _ := fs.PathExists(path.Join(fconfigPath, configFile))
 	if exists {
@@ -42,10 +40,8 @@ func main() {
 	fmt.Println("About to clear add post dir", conf[0].AddPostDir)
 	fs.RemoveDirContents(conf[0].AddPostDir)
 
-	if fcurl {
-		title, desc, link, imgUrl := aj.CurlData()
-		tagsCsv := strings.Join(curl.TAGS, ",")
-		json := curl.Json(title, desc, link, imgUrl, tagsCsv)
-		fmt.Println(json)
-	}
+	title, desc, link, imgUrl := aj.CurlData()
+	tagsCsv := strings.Join(curl.TAGS, ",")
+	json := curl.Json(title, desc, link, imgUrl, tagsCsv)
+	fmt.Println(json)
 }
