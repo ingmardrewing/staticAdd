@@ -42,7 +42,9 @@ func main() {
 	fs.RemoveDirContents(conf[0].AddPostDir)
 
 	title, desc, link, imgUrl := aj.CurlData()
-	tagsCsv := strings.Join(shared.GetArtTagsInRandomOrder(), ",")
+
+	tagsCsv := strings.Join(shared.EnrichArtTags(aj.GetTags()), ",")
 	json := curl.Json(title, desc, link, imgUrl, tagsCsv)
+
 	fmt.Println(json)
 }
