@@ -56,7 +56,8 @@ func TestWriteToFs(t *testing.T) {
 	"content":"contentValue",
 	"dsq_thread_id":"disqusIdValue",
 	"thumbBase64":"thumbBase64Value",
-	"category":"categoryValue"
+	"category":"categoryValue",
+	"microThumbUrl":"microThumbValue"
 }`
 	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/page42.json"))
 
@@ -93,5 +94,6 @@ func givenPageDto() staticIntf.PageDto {
 		"fspathValue",
 		"htmlfilenameValue",
 		"thumbBase64Value",
-		"categoryValue")
+		"categoryValue",
+		"microThumbValue")
 }

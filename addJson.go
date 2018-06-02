@@ -26,11 +26,14 @@ type addJson struct {
 	excerpt   string
 	url       string
 	dto       staticIntf.PageDto
+	tags      []string
 }
 
 func (a *addJson) GenerateDto() {
 	bda := staticBlogAdd.NewBlogDataAbstractor(a.awsBucket, a.srcDir, a.destDir, a.excerpt, a.url)
+	bda.ExtractData()
 	a.dto = bda.GeneratePostDto()
+	a.tags = bda.GetTags()
 }
 
 func (a *addJson) WriteToFs() {

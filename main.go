@@ -9,6 +9,7 @@ import (
 
 	"github.com/ingmardrewing/fs"
 	curl "github.com/ingmardrewing/gomicSocMedCurl"
+	shared "github.com/ingmardrewing/gomicSocMedShared"
 	"github.com/ingmardrewing/staticPersistence"
 )
 
@@ -41,7 +42,7 @@ func main() {
 	fs.RemoveDirContents(conf[0].AddPostDir)
 
 	title, desc, link, imgUrl := aj.CurlData()
-	tagsCsv := strings.Join(curl.GetArtTagsInRandomOrder(), ",")
+	tagsCsv := strings.Join(shared.GetArtTagsInRandomOrder(), ",")
 	json := curl.Json(title, desc, link, imgUrl, tagsCsv)
 	fmt.Println(json)
 }
