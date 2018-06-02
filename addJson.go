@@ -36,6 +36,10 @@ func (a *addJson) GenerateDto() {
 	a.tags = bda.GetTags()
 }
 
+func (a *addJson) GetTags() []string {
+	return a.tags
+}
+
 func (a *addJson) WriteToFs() {
 	filename := fmt.Sprintf("page%d.json", a.dto.Id())
 	staticPersistence.WritePageDtoToJson(a.dto, a.destDir, filename)
