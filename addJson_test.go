@@ -43,23 +43,21 @@ func TestWriteToFs(t *testing.T) {
 
 	aj.WriteToFs()
 	expected := `{
-	"version":1,
-	"thumbImg":"thumbUrlValue",
-	"postImg":"imageUrlValue",
+	"version":2,
 	"filename":"htmlfilenameValue",
-	"id":42,
-	"date":"createDateValue",
-	"url":"urlValue",
+	"path_from_doc_root":"pathValue",
+	"category":"categoryValue",
+	"tags":"",
+	"create_date":"createDateValue",
 	"title":"titleValue",
 	"title_plain":"titlePlainValue",
 	"excerpt":"descriptionValue",
 	"content":"contentValue",
-	"dsq_thread_id":"disqusIdValue",
-	"thumbBase64":"thumbBase64Value",
-	"category":"categoryValue",
-	"microThumbUrl":"microThumbValue"
+	"thumb_base64":"thumbBase64Value",
+	"images_urls":[{"title":"titleValue","w_190":"microThumbValue","w_390":"thumbUrlValue","w_800":"imageUrlValue","max_resolution":""}]
 }`
-	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/page42.json"))
+
+	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/doc00042.json"))
 
 	if actual != expected {
 		t.Error("expected\n", expected, "\nbut got\n", actual)
@@ -79,7 +77,7 @@ func givenAddJson() *addJson {
 }
 
 func givenPageDto() staticIntf.PageDto {
-	return staticPersistence.NewFilledDto(42,
+	return staticPersistence.NewFilledDto(12,
 		"titleValue",
 		"titlePlainValue",
 		"thumbUrlValue",
