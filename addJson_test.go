@@ -29,7 +29,7 @@ func TestGenerateDto(t *testing.T) {
 	aj := givenAddJson()
 
 	aj.GenerateDto()
-	expected := `<a href=\"testResources/src/add/image.png\"><img src=\"testResources/src/add/image-w800.png\" width=\"800\"></a>`
+	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" width=\"800\"></a>`
 	actual := aj.dto.Content()
 
 	if actual != expected {
@@ -40,14 +40,13 @@ func TestGenerateDto(t *testing.T) {
 func TestWriteToFs(t *testing.T) {
 	aj := givenAddJson()
 	aj.dto = givenPageDto()
-
 	aj.WriteToFs()
 	expected := `{
 	"version":2,
 	"filename":"htmlfilenameValue",
 	"path_from_doc_root":"pathValue",
 	"category":"categoryValue",
-	"tags":"",
+	"tags":["tag1","tag2"],
 	"create_date":"createDateValue",
 	"title":"titleValue",
 	"title_plain":"titlePlainValue",
@@ -57,7 +56,7 @@ func TestWriteToFs(t *testing.T) {
 	"images_urls":[{"title":"titleValue","w_190":"microThumbValue","w_390":"thumbUrlValue","w_800":"imageUrlValue","max_resolution":""}]
 }`
 
-	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/doc00042.json"))
+	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/doc00012.json"))
 
 	if actual != expected {
 		t.Error("expected\n", expected, "\nbut got\n", actual)
@@ -93,5 +92,7 @@ func givenPageDto() staticIntf.PageDto {
 		"htmlfilenameValue",
 		"thumbBase64Value",
 		"categoryValue",
-		"microThumbValue")
+		"microThumbValue",
+		[]string{"tag1", "tag2"},
+		[]staticIntf.Image{})
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ingmardrewing/staticBlogAdd"
 	"github.com/ingmardrewing/staticIntf"
 	"github.com/ingmardrewing/staticPersistence"
 )
@@ -30,7 +29,7 @@ type addJson struct {
 }
 
 func (a *addJson) GenerateDto() {
-	bda := staticBlogAdd.NewBlogDataAbstractor(
+	bda := NewBlogDataAbstractor(
 		a.awsBucket,
 		a.srcDir,
 		a.destDir,
@@ -49,6 +48,7 @@ func (a *addJson) WriteToFs() {
 	filename := fmt.Sprintf(
 		staticPersistence.JsonFileNameTemplate(),
 		a.dto.Id())
+
 	staticPersistence.WritePageDtoToJson(
 		a.dto,
 		a.destDir,
