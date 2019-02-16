@@ -6,6 +6,7 @@ import (
 
 	"github.com/ingmardrewing/staticIntf"
 	"github.com/ingmardrewing/staticPersistence"
+	"github.com/ingmardrewing/staticUtil"
 )
 
 func NewAddJson(bucketEnv, srcDir, destDir, excerpt, url string) *addJson {
@@ -56,5 +57,6 @@ func (a *addJson) WriteToFs() {
 }
 
 func (a *addJson) CurlData() (string, string, string, string) {
-	return a.dto.Title(), a.dto.Description(), a.dto.Url(), a.dto.ImageUrl()
+	url := a.url + staticUtil.GenerateDatePath() + a.dto.TitlePlain() + "/"
+	return a.dto.Title(), a.dto.Description(), url, a.dto.ImageUrl()
 }

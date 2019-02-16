@@ -83,7 +83,6 @@ func (b *BlogDataAbstractor) ExtractData() {
 
 	b.data.url = b.generateUrl(titlePlain)
 	b.data.id = b.getId()
-	b.data.disqId = b.generateDisqusId(b.data.id, titlePlain)
 	b.data.date = staticUtil.GetDate()
 	b.data.category = "blog post"
 }
@@ -96,11 +95,8 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 		b.data.thumbUrl,
 		b.data.imgUrl,
 		b.data.excerpt,
-		b.data.disqId,
 		b.data.date,
 		b.data.content,
-		b.data.url,
-		b.domain,
 		"",
 		"",
 		b.data.htmlFilename,
@@ -113,10 +109,6 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 
 func (b *BlogDataAbstractor) GetTags() []string {
 	return b.data.tags
-}
-
-func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
-	return fmt.Sprintf("%d %s%s", 1000000+id, b.domain, staticUtil.GenerateDatePath()+titlePlain)
 }
 
 func (b *BlogDataAbstractor) generateUrl(titlePlain string) string {
