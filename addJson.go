@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ingmardrewing/staticBlogAdd"
 	"github.com/ingmardrewing/staticIntf"
 	"github.com/ingmardrewing/staticPersistence"
+	"github.com/ingmardrewing/staticUtil"
 )
 
 func NewAddJson(bucketEnv, srcDir, destDir, excerpt, url string) *addJson {
@@ -30,7 +30,12 @@ type addJson struct {
 }
 
 func (a *addJson) GenerateDto() {
-	bda := staticBlogAdd.NewBlogDataAbstractor(a.awsBucket, a.srcDir, a.destDir, a.excerpt, a.url)
+	bda := NewBlogDataAbstractor(
+		a.awsBucket,
+		a.srcDir,
+		a.destDir,
+		a.excerpt,
+		a.url)
 	bda.ExtractData()
 	a.dto = bda.GeneratePostDto()
 	a.tags = bda.GetTags()
@@ -41,10 +46,17 @@ func (a *addJson) GetTags() []string {
 }
 
 func (a *addJson) WriteToFs() {
-	filename := fmt.Sprintf("page%d.json", a.dto.Id())
-	staticPersistence.WritePageDtoToJson(a.dto, a.destDir, filename)
+	filename := fmt.Sprintf(
+		staticPersistence.JsonFileNameTemplate(),
+		a.dto.Id())
+
+	staticPersistence.WritePageDtoToJson(
+		a.dto,
+		a.destDir,
+		filename)
 }
 
 func (a *addJson) CurlData() (string, string, string, string) {
-	return a.dto.Title(), a.dto.Description(), a.dto.Url(), a.dto.ImageUrl()
+	url := a.url + staticUtil.GenerateDatePath() + a.dto.TitlePlain() + "/"
+	return a.dto.Title(), a.dto.Description(), url, a.dto.ImageUrl()
 }

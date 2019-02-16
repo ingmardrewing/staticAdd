@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/ingmardrewing/fs"
-	"github.com/ingmardrewing/staticBlogAdd"
 )
 
 func TestMain(m *testing.M) {
@@ -23,17 +22,23 @@ func setup() {
 		fs.CreateDir(p)
 	}
 	src := path.Join(getTestFileDirPath(), "testResources/image/test-image.png")
-	dest := path.Join(getTestFileDirPath(), "testResources/src/add/image.png")
+	dest := path.Join(getTestFileDirPath(), "testResources/src/add/testImage.png")
 	fs.CopyFile(src, dest)
-	staticBlogAdd.DoUpload(false)
-
+	DoUpload(false)
 }
 
 func tearDown() {
 	for _, p := range givenDirPaths() {
 		fs.RemoveDirContents(p)
 	}
-	staticBlogAdd.DoUpload(true)
+
+	pth := path.Join(getTestFileDirPath(), "testResources/src/posts/")
+	filename := "page358.json"
+	if exist, _ := fs.PathExists(path.Join(pth, filename)); exist == true {
+		fs.RemoveFile(pth, filename)
+	}
+	//	fs.RemoveFile(p, "TestImage-w800.png")
+	DoUpload(true)
 }
 
 func givenDirPaths() []string {
