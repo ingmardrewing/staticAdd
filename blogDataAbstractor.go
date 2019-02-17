@@ -45,6 +45,7 @@ type abstractData struct {
 	excerpt       string
 	tags          []string
 	url           string
+	path          string
 	disqId        string
 	content       string
 	date          string
@@ -82,6 +83,7 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.content = imgHtml + mdContent
 
 	b.data.url = b.generateUrl(titlePlain)
+	b.data.path = b.generatePath(titlePlain)
 	b.data.id = b.getId()
 	b.data.date = staticUtil.GetDate()
 	b.data.category = "blog post"
@@ -97,8 +99,8 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 		b.data.excerpt,
 		b.data.date,
 		b.data.content,
-		b.data.url,
-		b.data.url,
+		b.data.path,
+		b.data.path,
 		b.data.htmlFilename,
 		"",
 		b.data.category,
@@ -111,8 +113,11 @@ func (b *BlogDataAbstractor) GetTags() []string {
 	return b.data.tags
 }
 
-func (b *BlogDataAbstractor) generateUrl(titlePlain string) string {
+func (b *BlogDataAbstractor) generatePath(titlePlain string) string {
 	return "/" + staticUtil.GenerateDatePath() + titlePlain + "/"
+}
+func (b *BlogDataAbstractor) generateUrl(titlePlain string) string {
+	return b.domain + staticUtil.GenerateDatePath() + titlePlain + "/"
 }
 
 func (b *BlogDataAbstractor) getId() int {
