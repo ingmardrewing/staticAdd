@@ -51,7 +51,7 @@ func TestBlogDataAbstractor(t *testing.T) {
 
 	actual = dto.CreateDate()
 	n := time.Now()
-	expected = fmt.Sprintf("%d-%d-%d %d:%d:%d", n.Year(), n.Month(), n.Day(), n.Hour(), n.Minute(), n.Second())
+	expected = fmt.Sprintf("%d-%d-%d", n.Year(), n.Month(), n.Day())
 
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
