@@ -132,12 +132,13 @@ func TestWriteData(t *testing.T) {
 	staticPersistence.WritePageDtoToJson(dto, postsDir, filename)
 
 	data := fs.ReadFileAsString(path.Join(postsDir, filename))
+	path := "/" + staticUtil.GenerateDatePath() + "test-image/"
 
 	date := staticUtil.GetDate()
 	expected := `{
 	"version":2,
 	"filename":"index.html",
-	"path_from_doc_root":"",
+	"path_from_doc_root":"` + path + `",
 	"category":"blog post",
 	"tags":[],
 	"create_date":"` + date + `",
