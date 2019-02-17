@@ -97,8 +97,8 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 		b.data.excerpt,
 		b.data.date,
 		b.data.content,
-		"",
-		"",
+		b.data.url,
+		b.data.url,
 		b.data.htmlFilename,
 		"",
 		b.data.category,
@@ -112,7 +112,7 @@ func (b *BlogDataAbstractor) GetTags() []string {
 }
 
 func (b *BlogDataAbstractor) generateUrl(titlePlain string) string {
-	return b.domain + staticUtil.GenerateDatePath() + titlePlain + "/"
+	return "/" + staticUtil.GenerateDatePath() + titlePlain + "/"
 }
 
 func (b *BlogDataAbstractor) getId() int {
@@ -141,7 +141,12 @@ func (b *BlogDataAbstractor) prepareImages() (string, string, string, string) {
 	b.im.PrepareImages()
 	b.im.UploadImages()
 
-	imgUrls := b.im.GetImageUrls()
+
+	imgUrls := []string{}
+	for _, imgUrl := b.im.GetImageUrls() {
+		imgUrls = append(imgUrls, strings.Replace(imgUrl, "%2F", "/"))
+	}
+
 	tpl := `<a href=\"%s\"><img src=\"%s\" width=\"800\"></a>`
 	imgHtml := fmt.Sprintf(tpl, imgUrls[3], imgUrls[2])
 	return imgUrls[0], imgUrls[1], imgUrls[2], imgHtml
