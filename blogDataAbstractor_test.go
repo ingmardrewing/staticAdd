@@ -169,6 +169,9 @@ func (i *imgManagerMock) GetImageUrls() []string {
 func (i *imgManagerMock) AddImageSize(size int) string {
 	return "TestImage-w" + strconv.Itoa(size) + ".png"
 }
+func (i *imgManagerMock) AddCropImageSize(size int) string {
+	return "TestImage-w" + strconv.Itoa(size) + ".png"
+}
 
 func givenBlogDataAbstractor() *BlogDataAbstractor {
 	addDir := getTestFileDirPath() + "/testResources/src/add/"

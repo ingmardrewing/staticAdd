@@ -36,6 +36,7 @@ func (a *addJson) GenerateDto() {
 		a.destDir,
 		a.excerpt,
 		a.url)
+
 	bda.ExtractData()
 	a.tags = bda.GetTags()
 	a.dto = bda.GeneratePostDto()

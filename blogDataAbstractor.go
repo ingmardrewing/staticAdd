@@ -25,6 +25,7 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	bda.domain = domain
 	bda.data = new(abstractData)
 
+	fmt.Println(addDir)
 	imgFilename := bda.findImageFileInAddDir()
 	imgPath := path.Join(addDir, imgFilename)
 	bda.im = NewImageManager(bucket, imgPath)
@@ -66,6 +67,7 @@ type BlogDataAbstractor struct {
 func (b *BlogDataAbstractor) ExtractData() {
 	b.data.htmlFilename = "index.html"
 	b.data.imageFileName = b.findImageFileInAddDir()
+	fmt.Println(b.data.imageFileName)
 
 	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
 	b.data.title = title
@@ -140,15 +142,18 @@ func (b *BlogDataAbstractor) stripLinksAndImages(text string) string {
 }
 
 func (b *BlogDataAbstractor) prepareImages() (string, string, string, string) {
-	b.im.AddImageSize(190)
-	b.im.AddImageSize(390)
+	b.im.AddCropImageSize(190)
+	b.im.AddCropImageSize(390)
 	b.im.AddImageSize(800)
+
 	b.im.PrepareImages()
 	b.im.UploadImages()
 
 	imgUrls := []string{}
 	for _, imgUrl := range b.im.GetImageUrls() {
-		imgUrls = append(imgUrls, strings.Replace(imgUrl, "%2F", "/", -1))
+		imgUrls = append(
+			imgUrls,
+			strings.Replace(imgUrl, "%2F", "/", -1))
 	}
 
 	tpl := `<a href=\"%s\"><img src=\"%s\" width=\"800\"></a>`
@@ -187,7 +192,6 @@ func (b *BlogDataAbstractor) extractTags(input string) []string {
 	rx := regexp.MustCompile(`#[A-Za-zäüößÄÜÖ]+\b`)
 	matches := rx.FindAllString(input, -1)
 	resultSet := []string{}
-	fmt.Println("hello?")
 	for _, m := range matches {
 		trimmedTag := strings.TrimPrefix(m, "#")
 		fmt.Println(trimmedTag)
@@ -208,7 +212,6 @@ func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 		excerpt := b.generateExcerpt(mdData)
 		content := b.generateHtmlFromMarkdown(mdData)
 		tags := b.extractTags(mdData)
-		fmt.Println(5)
 		return content, excerpt, tags
 	}
 	return "", b.defaultExcerpt, []string{}
