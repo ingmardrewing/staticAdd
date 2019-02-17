@@ -141,10 +141,9 @@ func (b *BlogDataAbstractor) prepareImages() (string, string, string, string) {
 	b.im.PrepareImages()
 	b.im.UploadImages()
 
-
 	imgUrls := []string{}
-	for _, imgUrl := b.im.GetImageUrls() {
-		imgUrls = append(imgUrls, strings.Replace(imgUrl, "%2F", "/"))
+	for _, imgUrl := range b.im.GetImageUrls() {
+		imgUrls = append(imgUrls, strings.Replace(imgUrl, "%2F", "/", -1))
 	}
 
 	tpl := `<a href=\"%s\"><img src=\"%s\" width=\"800\"></a>`
