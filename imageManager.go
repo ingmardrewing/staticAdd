@@ -83,7 +83,14 @@ func (i *ImageManager) GetImageUrls() []string {
 	}
 	log.Println("image paths (acquired via aws):")
 	log.Println(i.awsimageurls)
-	return i.awsimageurls
+
+	imgUrls := []string{}
+	for _, imgUrl := range i.awsimageurls {
+		imgUrls = append(
+			imgUrls,
+			strings.Replace(imgUrl, "%2F", "/", -1))
+	}
+	return imgUrls
 }
 
 func (i *ImageManager) AddCropImageSize(size int) string {

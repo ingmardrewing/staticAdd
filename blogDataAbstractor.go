@@ -25,7 +25,6 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	bda.domain = domain
 	bda.data = new(abstractData)
 
-	fmt.Println(addDir)
 	imgFilename := bda.findImageFileInAddDir()
 	imgPath := path.Join(addDir, imgFilename)
 	bda.im = NewImageManager(bucket, imgPath)
@@ -67,22 +66,40 @@ type BlogDataAbstractor struct {
 func (b *BlogDataAbstractor) ExtractData() {
 	b.data.htmlFilename = "index.html"
 	b.data.imageFileName = b.findImageFileInAddDir()
-	fmt.Println(b.data.imageFileName)
 
 	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
 	b.data.title = title
 	b.data.titlePlain = titlePlain
 
-	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
-	b.data.microThumbUrl = microThumbUrl
-	b.data.thumbUrl = thumbUrl
-	b.data.imgUrl = imgUrl
+	imgUrls := b.prepareImages()
+
+	b.data.images = append(b.data.images,
+		staticPersistence.NewImageDto(
+			title,
+			imgUrls[0],
+			imgUrls[1],
+			imgUrls[2],
+			imgUrls[3],
+			imgUrls[4],
+			imgUrls[5],
+			imgUrls[6]))
+
+	b.data.microThumbUrl = imgUrls[1]
+	b.data.thumbUrl = imgUrls[2]
+	b.data.imgUrl = imgUrls[3]
 
 	mdContent, excerpt, tags := b.readMdData()
 	b.data.mdContent = mdContent
 	b.data.excerpt = excerpt
 	b.data.tags = tags
-	b.data.content = imgHtml + mdContent
+
+	tpl := `<a href=\"%s\"><img src=\"%s\" srcset=\"%s 2x\" width=\"800\"></a>%s`
+	b.data.content = fmt.Sprintf(
+		tpl,
+		imgUrls[6],
+		imgUrls[4],
+		imgUrls[5],
+		mdContent)
 
 	b.data.url = b.generateUrl(titlePlain)
 	b.data.path = b.generatePath(titlePlain)
@@ -93,26 +110,33 @@ func (b *BlogDataAbstractor) ExtractData() {
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	return staticPersistence.NewFilledDto(
-		b.data.id,
 		b.data.title,
-		b.data.titlePlain,
-		b.data.thumbUrl,
-		b.data.imgUrl,
 		b.data.excerpt,
-		b.data.date,
 		b.data.content,
-		b.data.path,
+		b.data.category,
+		b.data.date,
 		b.data.path,
 		b.data.htmlFilename,
-		"",
-		b.data.category,
-		b.data.microThumbUrl,
 		b.data.tags,
 		b.data.images)
 }
 
 func (b *BlogDataAbstractor) GetTags() []string {
 	return b.data.tags
+}
+
+func (b *BlogDataAbstractor) GetTitlePlain() string {
+	return b.data.titlePlain
+}
+
+func (b *BlogDataAbstractor) GetImageUrl() string {
+	return b.data.imageFileName
+}
+
+func (b *BlogDataAbstractor) GetFilename() string {
+	return fmt.Sprintf(
+		staticPersistence.JsonFileNameTemplate(),
+		b.data.id)
 }
 
 func (b *BlogDataAbstractor) generatePath(titlePlain string) string {
@@ -141,24 +165,19 @@ func (b *BlogDataAbstractor) stripLinksAndImages(text string) string {
 	return rx.ReplaceAllString(text, "")
 }
 
-func (b *BlogDataAbstractor) prepareImages() (string, string, string, string) {
-	b.im.AddCropImageSize(190)
+func (b *BlogDataAbstractor) prepareImages() []string {
+	b.im.AddCropImageSize(80)
+	b.im.AddCropImageSize(185)
 	b.im.AddCropImageSize(390)
+	b.im.AddCropImageSize(800)
+
 	b.im.AddImageSize(800)
+	b.im.AddImageSize(1600)
 
 	b.im.PrepareImages()
 	b.im.UploadImages()
 
-	imgUrls := []string{}
-	for _, imgUrl := range b.im.GetImageUrls() {
-		imgUrls = append(
-			imgUrls,
-			strings.Replace(imgUrl, "%2F", "/", -1))
-	}
-
-	tpl := `<a href=\"%s\"><img src=\"%s\" width=\"800\"></a>`
-	imgHtml := fmt.Sprintf(tpl, imgUrls[3], imgUrls[2])
-	return imgUrls[0], imgUrls[1], imgUrls[2], imgHtml
+	return b.im.GetImageUrls()
 }
 
 func (b *BlogDataAbstractor) generateExcerpt(text string) string {
@@ -194,7 +213,6 @@ func (b *BlogDataAbstractor) extractTags(input string) []string {
 	resultSet := []string{}
 	for _, m := range matches {
 		trimmedTag := strings.TrimPrefix(m, "#")
-		fmt.Println(trimmedTag)
 		resultSet = append(resultSet, trimmedTag)
 	}
 	return resultSet
