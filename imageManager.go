@@ -22,6 +22,7 @@ type ImgManager interface {
 	UploadImages()
 	GetImageUrls() []string
 	AddImageSize(size int) string
+	AddCropImageSize(size int) string
 }
 
 // Upload images to the given awsbucket using
@@ -39,15 +40,23 @@ type ImageManager struct {
 	uploadimgagepaths []string
 	awsimageurls      []string
 	imagesizes        []int
+	cropimagesizes    []int
 	awsbucket         string
 }
 
 func (i *ImageManager) PrepareImages() {
 	imgdir := fs.GetPathWithoutFilename(i.sourceimagepath)
-	img := img.NewImgScaler(i.sourceimagepath, imgdir)
-	paths := img.PrepareResizeTo(i.imagesizes...)
+
+	imgcropscaler := img.NewImgScaler(i.sourceimagepath, imgdir)
+	paths := imgcropscaler.PrepareResizeTo(i.cropimagesizes...)
+
+	imgscaler := img.NewImgScaler(i.sourceimagepath, imgdir)
+	paths = append(paths,
+		imgscaler.PrepareResizeTo(i.imagesizes...)...)
 	i.uploadimgagepaths = append(paths, i.sourceimagepath)
-	img.ResizeAndCrop()
+
+	imgcropscaler.ResizeAndCrop()
+	imgscaler.Resize()
 }
 
 func (i *ImageManager) UploadImages() {
@@ -74,7 +83,19 @@ func (i *ImageManager) GetImageUrls() []string {
 	}
 	log.Println("image paths (acquired via aws):")
 	log.Println(i.awsimageurls)
-	return i.awsimageurls
+
+	imgUrls := []string{}
+	for _, imgUrl := range i.awsimageurls {
+		imgUrls = append(
+			imgUrls,
+			strings.Replace(imgUrl, "%2F", "/", -1))
+	}
+	return imgUrls
+}
+
+func (i *ImageManager) AddCropImageSize(size int) string {
+	i.cropimagesizes = append(i.cropimagesizes, size)
+	return i.getFileNameFor(size)
 }
 
 func (i *ImageManager) AddImageSize(size int) string {

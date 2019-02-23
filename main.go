@@ -38,9 +38,6 @@ func main() {
 	aj.WriteToFs()
 	fs.RemoveDirContents(conf[0].AddPostDir)
 
-	fmt.Println("About to clear add post dir", conf[0].AddPostDir)
-	fs.RemoveDirContents(conf[0].AddPostDir)
-
 	title, desc, link, imgUrl := aj.CurlData()
 
 	tagsCsv := strings.Join(shared.EnrichArtTags(aj.GetTags()), ",")

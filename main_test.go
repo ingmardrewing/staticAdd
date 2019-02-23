@@ -33,11 +33,10 @@ func tearDown() {
 	}
 
 	pth := path.Join(getTestFileDirPath(), "testResources/src/posts/")
-	filename := "page358.json"
+	filename := "page42.json"
 	if exist, _ := fs.PathExists(path.Join(pth, filename)); exist == true {
 		fs.RemoveFile(pth, filename)
 	}
-	//	fs.RemoveFile(p, "TestImage-w800.png")
 	DoUpload(true)
 }
 

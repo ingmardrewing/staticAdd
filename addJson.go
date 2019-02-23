@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/ingmardrewing/staticIntf"
@@ -20,13 +19,16 @@ func NewAddJson(bucketEnv, srcDir, destDir, excerpt, url string) *addJson {
 }
 
 type addJson struct {
-	awsBucket string
-	srcDir    string
-	destDir   string
-	excerpt   string
-	url       string
-	dto       staticIntf.PageDto
-	tags      []string
+	awsBucket  string
+	srcDir     string
+	destDir    string
+	excerpt    string
+	url        string
+	filename   string
+	titlePlain string
+	imageUrl   string
+	dto        staticIntf.PageDto
+	tags       []string
 }
 
 func (a *addJson) GenerateDto() {
@@ -36,8 +38,12 @@ func (a *addJson) GenerateDto() {
 		a.destDir,
 		a.excerpt,
 		a.url)
+
 	bda.ExtractData()
 	a.dto = bda.GeneratePostDto()
+	a.filename = bda.GetFilename()
+	a.titlePlain = bda.GetTitlePlain()
+	a.imageUrl = bda.GetImageUrl()
 	a.tags = bda.GetTags()
 }
 
@@ -46,17 +52,13 @@ func (a *addJson) GetTags() []string {
 }
 
 func (a *addJson) WriteToFs() {
-	filename := fmt.Sprintf(
-		staticPersistence.JsonFileNameTemplate(),
-		a.dto.Id())
-
 	staticPersistence.WritePageDtoToJson(
 		a.dto,
 		a.destDir,
-		filename)
+		a.filename)
 }
 
 func (a *addJson) CurlData() (string, string, string, string) {
-	url := a.url + staticUtil.GenerateDatePath() + a.dto.TitlePlain() + "/"
-	return a.dto.Title(), a.dto.Description(), url, a.dto.ImageUrl()
+	url := a.url + staticUtil.GenerateDatePath() + a.titlePlain + "/"
+	return a.dto.Title(), a.dto.Description(), url, a.imageUrl
 }

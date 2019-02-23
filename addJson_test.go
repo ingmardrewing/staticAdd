@@ -29,7 +29,8 @@ func TestGenerateDto(t *testing.T) {
 	aj := givenAddJson()
 
 	aj.GenerateDto()
-	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" width=\"800\"></a>`
+
+	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" srcset=\"testResources/src/add/testImage-w1600.png 2x\" width=\"800\"></a>`
 	actual := aj.dto.Content()
 
 	if actual != expected {
@@ -40,6 +41,7 @@ func TestGenerateDto(t *testing.T) {
 func TestWriteToFs(t *testing.T) {
 	aj := givenAddJson()
 	aj.dto = givenPageDto()
+	aj.filename = "doc00012.json"
 	aj.WriteToFs()
 	expected := `{
 	"version":2,
@@ -49,11 +51,18 @@ func TestWriteToFs(t *testing.T) {
 	"tags":["tag1","tag2"],
 	"create_date":"createDateValue",
 	"title":"titleValue",
-	"title_plain":"titlePlainValue",
 	"excerpt":"descriptionValue",
 	"content":"contentValue",
-	"thumb_base64":"thumbBase64Value",
-	"images_urls":[{"title":"titleValue","w_190":"microThumbValue","w_390":"thumbUrlValue","w_800":"imageUrlValue","max_resolution":""}]
+	"images_urls":[{
+		"title":"Test Image",
+		"w_85":"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"w_190":"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"w_390":"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"w_800":"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"w_800_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
+		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w1600.png",
+		"max_resolution":"https://drewing.de/just/another/path/TestImage.png"
+	}]
 }`
 
 	actual := fs.ReadFileAsString(path.Join(getTestFileDirPath(), "testResources/src/posts/doc00012.json"))
@@ -76,20 +85,27 @@ func givenAddJson() *addJson {
 }
 
 func givenPageDto() staticIntf.PageDto {
-	return staticPersistence.NewFilledDto(12,
+	img := givenImage()
+	return staticPersistence.NewFilledDto(
 		"titleValue",
-		"titlePlainValue",
-		"thumbUrlValue",
-		"imageUrlValue",
 		"descriptionValue",
-		"createDateValue",
 		"contentValue",
-		"pathValue",
-		"fspathValue",
-		"htmlfilenameValue",
-		"thumbBase64Value",
 		"categoryValue",
-		"microThumbValue",
+		"createDateValue",
+		"pathValue",
+		"htmlfilenameValue",
 		[]string{"tag1", "tag2"},
-		[]staticIntf.Image{})
+		[]staticIntf.Image{img})
+}
+
+func givenImage() staticIntf.Image {
+	return staticPersistence.NewImageDto(
+		"Test Image",
+		"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"https://drewing.de/just/another/path/TestImage-w800.png",
+		"https://drewing.de/just/another/path/TestImage-w1600.png",
+		"https://drewing.de/just/another/path/TestImage.png")
 }
