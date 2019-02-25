@@ -26,7 +26,6 @@ type addJson struct {
 	url        string
 	filename   string
 	titlePlain string
-	imageUrl   string
 	dto        staticIntf.PageDto
 	tags       []string
 }
@@ -43,7 +42,6 @@ func (a *addJson) GenerateDto() {
 	a.dto = bda.GeneratePostDto()
 	a.filename = bda.GetFilename()
 	a.titlePlain = bda.GetTitlePlain()
-	a.imageUrl = bda.GetImageUrl()
 	a.tags = bda.GetTags()
 }
 
@@ -60,5 +58,5 @@ func (a *addJson) WriteToFs() {
 
 func (a *addJson) CurlData() (string, string, string, string) {
 	url := a.url + staticUtil.GenerateDatePath() + a.titlePlain + "/"
-	return a.dto.Title(), a.dto.Description(), url, a.imageUrl
+	return a.dto.Title(), a.dto.Description(), url, a.dto.Images()[0].MaxResolution()
 }

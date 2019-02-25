@@ -72,6 +72,31 @@ func TestWriteToFs(t *testing.T) {
 	}
 }
 
+func TestCurlData(t *testing.T) {
+	aj := givenAddJson()
+	aj.GenerateDto()
+
+	expectedTitle := "Test Image"
+	expectedDescription := "Test 1, 2"
+	expectedUrl := "https://drewing.de/blog2019/2/25/test-image/"
+	expectedImageUrl := "testResources/src/add/testImage.png"
+
+	title, description, url, imageUrl := aj.CurlData()
+
+	if title != expectedTitle {
+		t.Error("expected", expectedTitle, "but got", title)
+	}
+	if description != expectedDescription {
+		t.Error("expected", expectedDescription, "but got", description)
+	}
+	if url != expectedUrl {
+		t.Error("expected", expectedUrl, "but got", url)
+	}
+	if imageUrl != expectedImageUrl {
+		t.Error("expected", expectedImageUrl, "but got", imageUrl)
+	}
+}
+
 func givenAddJson() *addJson {
 	envName := "TEST_AWS_BUCKET"
 	bucketName := "testBucketName"
