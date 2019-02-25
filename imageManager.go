@@ -48,11 +48,12 @@ func (i *ImageManager) PrepareImages() {
 	imgdir := fs.GetPathWithoutFilename(i.sourceimagepath)
 
 	imgcropscaler := img.NewImgScaler(i.sourceimagepath, imgdir)
-	paths := imgcropscaler.PrepareResizeTo(i.cropimagesizes...)
+	imgcropscaler.PrepareResizeTo(i.cropimagesizes...)
+	paths := imgcropscaler.GetResizeAndCropPaths()
 
 	imgscaler := img.NewImgScaler(i.sourceimagepath, imgdir)
-	paths = append(paths,
-		imgscaler.PrepareResizeTo(i.imagesizes...)...)
+	imgscaler.PrepareResizeTo(i.imagesizes...)
+	paths = append(paths, imgscaler.GetResizeOnlyPaths()...)
 	i.uploadimgagepaths = append(paths, i.sourceimagepath)
 
 	imgcropscaler.ResizeAndCrop()
