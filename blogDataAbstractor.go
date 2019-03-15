@@ -75,6 +75,8 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.fileNameTags = fileNameTags
 	b.cleanseFileName()
 
+	b.data.imageFileName = b.data.imageFileNameWithoutTags
+
 	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
 	b.data.title = title
 	b.data.titlePlain = titlePlain
@@ -142,7 +144,11 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 }
 
 func (b *BlogDataAbstractor) GetTags() []string {
-	return b.data.tags
+	return append(b.data.fileNameTags, b.data.tags...)
+}
+
+func (b *BlogDataAbstractor) GetFileNameTags() []string {
+	return b.data.fileNameTags
 }
 
 func (b *BlogDataAbstractor) GetTitlePlain() string {
