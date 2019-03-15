@@ -259,7 +259,7 @@ func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 		content := b.generateHtmlFromMarkdown(mdData)
 		tags := b.extractTags(mdData)
 		return content, excerpt, tags
-	} else if len(b.data.fileNameTags) > 0 {
+	} else if len(b.data.fileNameTags) > 0 && b.defaultByTag != nil {
 		for _, d := range b.defaultByTag {
 			if d.Tag == b.data.fileNameTags[0] {
 				return d.Content, d.Excerpt, b.data.fileNameTags
