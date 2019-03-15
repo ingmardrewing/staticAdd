@@ -44,6 +44,7 @@ type abstractData struct {
 	mdContent     string
 	excerpt       string
 	tags          []string
+	fileNameTags  []string
 	url           string
 	path          string
 	disqId        string
@@ -243,6 +244,20 @@ func (b *BlogDataAbstractor) findImageFileInAddDir() string {
 		}
 	}
 	return ""
+}
+
+func (b *BlogDataAbstractor) findFileNameTags(filename string) (string, []string) {
+	ext := filepath.Ext(filename)
+	basename := strings.TrimSuffix(filename, ext)
+	nameParts := strings.Split(basename, "+")
+	tags := []string{}
+	if len(nameParts) > 1 {
+		for _, p := range nameParts[1:] {
+			tags = append(tags, p)
+		}
+	}
+	pureFilename := fmt.Sprintf("%s%s", nameParts[0], ext)
+	return pureFilename, tags
 }
 
 func (b *BlogDataAbstractor) inferBlogTitleFromFilename(filename string) (string, string) {

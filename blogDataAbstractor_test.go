@@ -82,6 +82,29 @@ func TestExtractTagsFromMarkdownText(t *testing.T) {
 	}
 }
 
+func TestFindFileNameTags(t *testing.T) {
+	bda := givenBlogDataAbstractor()
+
+	givenFilename := "filename+one+two.png"
+	expectedPureFilename := "filename.png"
+	actualPureFilename, actualTags := bda.findFileNameTags(givenFilename)
+	if actualPureFilename != expectedPureFilename {
+		t.Error("Expected", expectedPureFilename, "but got", actualPureFilename)
+	}
+
+	if len(actualTags) != 2 {
+		t.Error("Expected actualTags to be of length 2, but it isn't.")
+	}
+
+	if actualTags[0] != "one" {
+		t.Error("Expected first found tag to be 'one', but it is:", actualTags[0])
+	}
+
+	if actualTags[1] != "two" {
+		t.Error("Expected second found tag to be 'two', but it is:", actualTags[1])
+	}
+}
+
 func TestSplitCamelCaseAndNumbers(t *testing.T) {
 	expected := []string{"another", "Test", "4", "this"}
 	actual := splitCamelCaseAndNumbers("anotherTest4this")

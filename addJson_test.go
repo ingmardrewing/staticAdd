@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"testing"
+	"time"
 
 	"github.com/ingmardrewing/fs"
 	"github.com/ingmardrewing/staticIntf"
@@ -36,6 +38,10 @@ func TestGenerateDto(t *testing.T) {
 	if actual != expected {
 		t.Error("Expected\n", expected, "\nbut got\n", actual)
 	}
+}
+
+func TestSelectDefaultContentByNameTag(t *testing.T) {
+
 }
 
 func TestWriteToFs(t *testing.T) {
@@ -78,7 +84,9 @@ func TestCurlData(t *testing.T) {
 
 	expectedTitle := "Test Image"
 	expectedDescription := "Test 1, 2"
-	expectedUrl := "https://drewing.de/blog2019/2/25/test-image/"
+
+	n := time.Now()
+	expectedUrl := fmt.Sprintf("https://drewing.de/blog%d/%d/%d/test-image/", n.Year(), n.Month(), n.Day())
 	expectedImageUrl := "testResources/src/add/testImage.png"
 
 	title, description, url, imageUrl := aj.CurlData()
