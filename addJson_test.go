@@ -21,7 +21,7 @@ func TestNewAddJson(t *testing.T) {
 	url := "https://drewing.de/blog"
 	os.Setenv(envName, bucketName)
 
-	aj := NewAddJson(envName, srcDir, destDir, excerpt, url)
+	aj := NewAddJson(envName, srcDir, destDir, excerpt, nil, url)
 	if bucketName != aj.awsBucket {
 		t.Error("Expected", aj.awsBucket, "to be", bucketName)
 	}
@@ -114,7 +114,7 @@ func givenAddJson() *addJson {
 	url := "https://drewing.de/blog"
 	os.Setenv(envName, bucketName)
 
-	return NewAddJson(envName, srcDir, destDir, excerpt, url)
+	return NewAddJson(envName, srcDir, destDir, excerpt, nil, url)
 }
 
 func givenPageDto() staticIntf.PageDto {

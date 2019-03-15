@@ -18,11 +18,12 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
-func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string) *BlogDataAbstractor {
+func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
 	bda := new(BlogDataAbstractor)
 	bda.addDir = addDir
 	bda.postsDir = postsDir
 	bda.defaultExcerpt = defaultExcerpt
+	bda.defaultByTag = dbt
 	bda.domain = domain
 	bda.data = new(abstractData)
 
@@ -64,6 +65,7 @@ type BlogDataAbstractor struct {
 	defaultExcerpt string
 	im             ImgManager
 	dto            *staticIntf.PageDto
+	defaultByTag   []staticPersistence.DefaultByTag
 }
 
 func (b *BlogDataAbstractor) ExtractData() {

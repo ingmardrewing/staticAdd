@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"path"
 	"reflect"
@@ -138,7 +139,7 @@ func TestWriteData(t *testing.T) {
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 	domain := "https://drewing.de/blog/"
 
-	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain)
+	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain, nil)
 	bda.im = &imgManagerMock{}
 	bda.ExtractData()
 	dto := bda.GeneratePostDto()
@@ -204,9 +205,16 @@ func givenBlogDataAbstractor() *BlogDataAbstractor {
 	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 
+	jsonString := `{"tag":"sketch","excerpt":"excerpt","content":"content"}`
+	var dbt staticPersistence.DefaultByTag
+	json.Unmarshal([]byte(jsonString), &dbt)
+
+	dbts := []staticPersistence.DefaultByTag{dbt}
+
 	return NewBlogDataAbstractor("drewingde",
 		addDir,
 		postsDir,
 		dExcerpt,
-		"https://drewing.de/blog/")
+		"https://drewing.de/blog/",
+		dbts)
 }
