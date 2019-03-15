@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -33,25 +34,26 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 }
 
 type abstractData struct {
-	id            int
-	htmlFilename  string
-	imageFileName string
-	title         string
-	titlePlain    string
-	microThumbUrl string
-	thumbUrl      string
-	imgUrl        string
-	mdContent     string
-	excerpt       string
-	tags          []string
-	fileNameTags  []string
-	url           string
-	path          string
-	disqId        string
-	content       string
-	date          string
-	category      string
-	images        []staticIntf.Image
+	id                       int
+	htmlFilename             string
+	imageFileName            string
+	imageFileNameWithoutTags string
+	title                    string
+	titlePlain               string
+	microThumbUrl            string
+	thumbUrl                 string
+	imgUrl                   string
+	mdContent                string
+	excerpt                  string
+	tags                     []string
+	fileNameTags             []string
+	url                      string
+	path                     string
+	disqId                   string
+	content                  string
+	date                     string
+	category                 string
+	images                   []staticIntf.Image
 }
 
 type BlogDataAbstractor struct {
@@ -67,6 +69,11 @@ type BlogDataAbstractor struct {
 func (b *BlogDataAbstractor) ExtractData() {
 	b.data.htmlFilename = "index.html"
 	b.data.imageFileName = b.findImageFileInAddDir()
+
+	imageFileNameWithoutTags, fileNameTags := b.findFileNameTags(b.data.imageFileName)
+	b.data.imageFileNameWithoutTags = imageFileNameWithoutTags
+	b.data.fileNameTags = fileNameTags
+	b.cleanseFileName()
 
 	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
 	b.data.title = title
@@ -107,6 +114,18 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.id = b.getId()
 	b.data.date = staticUtil.GetDate()
 	b.data.category = "blog post"
+}
+
+func (b *BlogDataAbstractor) cleanseFileName() {
+	if len(b.data.imageFileNameWithoutTags) > 0 {
+		from := b.addDir + b.data.imageFileName
+		to := b.addDir + b.data.imageFileNameWithoutTags
+		if from != to {
+			if os.Rename(from, to) != nil {
+				panic("Could not rename file")
+			}
+		}
+	}
 }
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
