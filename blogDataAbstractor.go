@@ -27,8 +27,16 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	bda.domain = domain
 	bda.data = new(abstractData)
 
-	imgFilename := bda.findImageFileInAddDir()
-	imgPath := path.Join(addDir, imgFilename)
+	bda.data.imageFileName = bda.findImageFileInAddDir()
+
+	imageFileNameWithoutTags, fileNameTags := bda.findFileNameTags(bda.data.imageFileName)
+	bda.data.imageFileNameWithoutTags = imageFileNameWithoutTags
+	bda.data.fileNameTags = fileNameTags
+	bda.cleanseFileName()
+
+	bda.data.imageFileName = bda.data.imageFileNameWithoutTags
+
+	imgPath := path.Join(addDir, bda.data.imageFileName)
 	bda.im = NewImageManager(bucket, imgPath)
 
 	return bda
@@ -70,14 +78,6 @@ type BlogDataAbstractor struct {
 
 func (b *BlogDataAbstractor) ExtractData() {
 	b.data.htmlFilename = "index.html"
-	b.data.imageFileName = b.findImageFileInAddDir()
-
-	imageFileNameWithoutTags, fileNameTags := b.findFileNameTags(b.data.imageFileName)
-	b.data.imageFileNameWithoutTags = imageFileNameWithoutTags
-	b.data.fileNameTags = fileNameTags
-	b.cleanseFileName()
-
-	b.data.imageFileName = b.data.imageFileNameWithoutTags
 
 	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
 	b.data.title = title
