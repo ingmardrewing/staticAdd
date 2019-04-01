@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"path"
 	"reflect"
@@ -82,9 +83,41 @@ func TestExtractTagsFromMarkdownText(t *testing.T) {
 	}
 }
 
+func TestFindFileNameTags(t *testing.T) {
+	bda := givenBlogDataAbstractor()
+
+	givenFilename := "filename+one+two.png"
+	expectedPureFilename := "filename.png"
+	actualPureFilename, actualTags := bda.findFileNameTags(givenFilename)
+	if actualPureFilename != expectedPureFilename {
+		t.Error("Expected", expectedPureFilename, "but got", actualPureFilename)
+	}
+
+	if len(actualTags) != 2 {
+		t.Error("Expected actualTags to be of length 2, but it isn't.")
+	}
+
+	if actualTags[0] != "one" {
+		t.Error("Expected first found tag to be 'one', but it is:", actualTags[0])
+	}
+
+	if actualTags[1] != "two" {
+		t.Error("Expected second found tag to be 'two', but it is:", actualTags[1])
+	}
+}
+
 func TestSplitCamelCaseAndNumbers(t *testing.T) {
-	expected := []string{"another", "Test", "4", "this"}
-	actual := splitCamelCaseAndNumbers("anotherTest4this")
+	expected := []string{"another", "AOC", "Test", "4", "this"}
+	actual := splitCamelCaseAndNumbers("anotherAOCTest4this")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected", expected, "but got", actual)
+	}
+}
+
+func TestFindUpperCaseSequence(t *testing.T) {
+	expected := []string{"AOC", "Test"}
+	actual := findUpperCaseSequence("AOCTest")
 
 	if !reflect.DeepEqual(expected, actual) {
 		t.Error("Expected", expected, "but got", actual)
@@ -115,7 +148,7 @@ func TestWriteData(t *testing.T) {
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 	domain := "https://drewing.de/blog/"
 
-	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain)
+	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain, nil)
 	bda.im = &imgManagerMock{}
 	bda.ExtractData()
 	dto := bda.GeneratePostDto()
@@ -181,9 +214,16 @@ func givenBlogDataAbstractor() *BlogDataAbstractor {
 	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 
+	jsonString := `{"tag":"sketch","excerpt":"excerpt","content":"content"}`
+	var dbt staticPersistence.DefaultByTag
+	json.Unmarshal([]byte(jsonString), &dbt)
+
+	dbts := []staticPersistence.DefaultByTag{dbt}
+
 	return NewBlogDataAbstractor("drewingde",
 		addDir,
 		postsDir,
 		dExcerpt,
-		"https://drewing.de/blog/")
+		"https://drewing.de/blog/",
+		dbts)
 }

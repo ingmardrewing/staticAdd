@@ -33,7 +33,7 @@ func readConf() {
 func main() {
 	readConf()
 
-	aj := NewAddJson("AWS_BUCKET", conf[0].AddPostDir, conf[0].WritePostDir, conf[0].DefaultMeta.BlogExcerpt, "https://drewing.de/blog/")
+	aj := NewAddJson("AWS_BUCKET", conf[0].AddPostDir, conf[0].WritePostDir, conf[0].DefaultMeta.BlogExcerpt, conf[0].DefaultMeta.DefaultByTags, "https://drewing.de/blog/")
 	aj.GenerateDto()
 	aj.WriteToFs()
 	fs.RemoveDirContents(conf[0].AddPostDir)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -17,40 +18,57 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
-func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string) *BlogDataAbstractor {
+var (
+	RX     = regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]*[a-zäüöß]*)")
+	RX2REL = regexp.MustCompile("[A-ZÄÜÖ][A-ZÄÜÖ]+")
+	RX2    = regexp.MustCompile("([A-ZÄÜÖ]+)([A-ZÄÜÖ][a-zäüöß]+)")
+)
+
+func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
 	bda := new(BlogDataAbstractor)
 	bda.addDir = addDir
 	bda.postsDir = postsDir
 	bda.defaultExcerpt = defaultExcerpt
+	bda.defaultByTag = dbt
 	bda.domain = domain
 	bda.data = new(abstractData)
 
-	imgFilename := bda.findImageFileInAddDir()
-	imgPath := path.Join(addDir, imgFilename)
+	bda.data.imageFileName = bda.findImageFileInAddDir()
+
+	imageFileNameWithoutTags, fileNameTags := bda.findFileNameTags(bda.data.imageFileName)
+	bda.data.imageFileNameWithoutTags = imageFileNameWithoutTags
+	bda.data.fileNameTags = fileNameTags
+	bda.cleanseFileName()
+
+	bda.data.imageFileName = bda.data.imageFileNameWithoutTags
+
+	imgPath := path.Join(addDir, bda.data.imageFileName)
 	bda.im = NewImageManager(bucket, imgPath)
 
 	return bda
 }
 
 type abstractData struct {
-	id            int
-	htmlFilename  string
-	imageFileName string
-	title         string
-	titlePlain    string
-	microThumbUrl string
-	thumbUrl      string
-	imgUrl        string
-	mdContent     string
-	excerpt       string
-	tags          []string
-	url           string
-	path          string
-	disqId        string
-	content       string
-	date          string
-	category      string
-	images        []staticIntf.Image
+	id                       int
+	htmlFilename             string
+	imageFileName            string
+	imageFileNameWithoutTags string
+	title                    string
+	titlePlain               string
+	microThumbUrl            string
+	thumbUrl                 string
+	imgUrl                   string
+	mdContent                string
+	excerpt                  string
+	tags                     []string
+	fileNameTags             []string
+	url                      string
+	path                     string
+	disqId                   string
+	content                  string
+	date                     string
+	category                 string
+	images                   []staticIntf.Image
 }
 
 type BlogDataAbstractor struct {
@@ -61,11 +79,11 @@ type BlogDataAbstractor struct {
 	defaultExcerpt string
 	im             ImgManager
 	dto            *staticIntf.PageDto
+	defaultByTag   []staticPersistence.DefaultByTag
 }
 
 func (b *BlogDataAbstractor) ExtractData() {
 	b.data.htmlFilename = "index.html"
-	b.data.imageFileName = b.findImageFileInAddDir()
 
 	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
 	b.data.title = title
@@ -108,6 +126,18 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.category = "blog post"
 }
 
+func (b *BlogDataAbstractor) cleanseFileName() {
+	if len(b.data.imageFileNameWithoutTags) > 0 {
+		from := b.addDir + b.data.imageFileName
+		to := b.addDir + b.data.imageFileNameWithoutTags
+		if from != to {
+			if os.Rename(from, to) != nil {
+				panic("Could not rename file")
+			}
+		}
+	}
+}
+
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	return staticPersistence.NewFilledDto(
 		b.data.title,
@@ -122,7 +152,11 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 }
 
 func (b *BlogDataAbstractor) GetTags() []string {
-	return b.data.tags
+	return append(b.data.fileNameTags, b.data.tags...)
+}
+
+func (b *BlogDataAbstractor) GetFileNameTags() []string {
+	return b.data.fileNameTags
 }
 
 func (b *BlogDataAbstractor) GetTitlePlain() string {
@@ -231,6 +265,12 @@ func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 		content := b.generateHtmlFromMarkdown(mdData)
 		tags := b.extractTags(mdData)
 		return content, excerpt, tags
+	} else if len(b.data.fileNameTags) > 0 && b.defaultByTag != nil {
+		for _, d := range b.defaultByTag {
+			if d.Tag == b.data.fileNameTags[0] {
+				return d.Content, d.Excerpt, b.data.fileNameTags
+			}
+		}
 	}
 	return "", b.defaultExcerpt, []string{}
 }
@@ -243,6 +283,20 @@ func (b *BlogDataAbstractor) findImageFileInAddDir() string {
 		}
 	}
 	return ""
+}
+
+func (b *BlogDataAbstractor) findFileNameTags(filename string) (string, []string) {
+	ext := filepath.Ext(filename)
+	basename := strings.TrimSuffix(filename, ext)
+	nameParts := strings.Split(basename, "+")
+	tags := []string{}
+	if len(nameParts) > 1 {
+		for _, p := range nameParts[1:] {
+			tags = append(tags, p)
+		}
+	}
+	pureFilename := fmt.Sprintf("%s%s", nameParts[0], ext)
+	return pureFilename, tags
 }
 
 func (b *BlogDataAbstractor) inferBlogTitleFromFilename(filename string) (string, string) {
@@ -262,8 +316,20 @@ func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
 }
 
 func splitCamelCaseAndNumbers(whole string) []string {
-	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]?[a-zäüöß]*)")
-	return rx.FindAllString(whole, -1)
+	found := []string{}
+	parts := RX.FindAllString(whole, -1)
+	for _, p := range parts {
+		found = append(found, findUpperCaseSequence(p)...)
+	}
+	return found
+}
+
+func findUpperCaseSequence(chars string) []string {
+	if RX2REL.MatchString(chars) {
+		subParts := RX2.FindAllStringSubmatch(chars, -1)
+		return subParts[0][1:]
+	}
+	return []string{chars}
 }
 
 func splitAtSpecialChars(whole string) []string {

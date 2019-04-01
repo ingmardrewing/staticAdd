@@ -8,13 +8,16 @@ import (
 	"github.com/ingmardrewing/staticUtil"
 )
 
-func NewAddJson(bucketEnv, srcDir, destDir, excerpt, url string) *addJson {
+func NewAddJson(bucketEnv, srcDir, destDir, excerpt string,
+	defaultByTag []staticPersistence.DefaultByTag,
+	url string) *addJson {
 	aj := new(addJson)
 	aj.awsBucket = os.Getenv(bucketEnv)
 	aj.srcDir = srcDir
 	aj.destDir = destDir
 	aj.excerpt = excerpt
 	aj.url = url
+	aj.dbt = defaultByTag
 	return aj
 }
 
@@ -27,6 +30,7 @@ type addJson struct {
 	filename   string
 	titlePlain string
 	dto        staticIntf.PageDto
+	dbt        []staticPersistence.DefaultByTag
 	tags       []string
 }
 
@@ -36,7 +40,8 @@ func (a *addJson) GenerateDto() {
 		a.srcDir,
 		a.destDir,
 		a.excerpt,
-		a.url)
+		a.url,
+		a.dbt)
 
 	bda.ExtractData()
 	a.dto = bda.GeneratePostDto()
