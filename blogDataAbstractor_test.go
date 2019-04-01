@@ -107,8 +107,17 @@ func TestFindFileNameTags(t *testing.T) {
 }
 
 func TestSplitCamelCaseAndNumbers(t *testing.T) {
-	expected := []string{"another", "Test", "4", "this"}
-	actual := splitCamelCaseAndNumbers("anotherTest4this")
+	expected := []string{"another", "AOC", "Test", "4", "this"}
+	actual := splitCamelCaseAndNumbers("anotherAOCTest4this")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected", expected, "but got", actual)
+	}
+}
+
+func TestFindUpperCaseSequence(t *testing.T) {
+	expected := []string{"AOC", "Test"}
+	actual := findUpperCaseSequence("AOCTest")
 
 	if !reflect.DeepEqual(expected, actual) {
 		t.Error("Expected", expected, "but got", actual)

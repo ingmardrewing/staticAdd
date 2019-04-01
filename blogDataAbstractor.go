@@ -310,8 +310,23 @@ func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
 }
 
 func splitCamelCaseAndNumbers(whole string) []string {
-	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]?[a-zäüöß]*)")
-	return rx.FindAllString(whole, -1)
+	found := []string{}
+	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]*[a-zäüöß]*)")
+	parts := rx.FindAllString(whole, -1)
+	for _, p := range parts {
+		found = append(found, findUpperCaseSequence(p)...)
+	}
+	return found
+}
+
+func findUpperCaseSequence(chars string) []string {
+	rx2rel := regexp.MustCompile("[A-ZÄÜÖ][A-ZÄÜÖ]+")
+	if rx2rel.MatchString(chars) {
+		rx2 := regexp.MustCompile("([A-ZÄÜÖ]+)([A-ZÄÜÖ][a-zäüöß]+)")
+		subParts := rx2.FindAllStringSubmatch(chars, -1)
+		return subParts[0][1:]
+	}
+	return []string{chars}
 }
 
 func splitAtSpecialChars(whole string) []string {
