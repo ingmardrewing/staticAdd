@@ -18,6 +18,12 @@ import (
 	"gopkg.in/russross/blackfriday.v2"
 )
 
+var (
+	RX     = regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]*[a-zäüöß]*)")
+	RX2REL = regexp.MustCompile("[A-ZÄÜÖ][A-ZÄÜÖ]+")
+	RX2    = regexp.MustCompile("([A-ZÄÜÖ]+)([A-ZÄÜÖ][a-zäüöß]+)")
+)
+
 func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
 	bda := new(BlogDataAbstractor)
 	bda.addDir = addDir
@@ -311,8 +317,7 @@ func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
 
 func splitCamelCaseAndNumbers(whole string) []string {
 	found := []string{}
-	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]*[a-zäüöß]*)")
-	parts := rx.FindAllString(whole, -1)
+	parts := RX.FindAllString(whole, -1)
 	for _, p := range parts {
 		found = append(found, findUpperCaseSequence(p)...)
 	}
@@ -320,10 +325,8 @@ func splitCamelCaseAndNumbers(whole string) []string {
 }
 
 func findUpperCaseSequence(chars string) []string {
-	rx2rel := regexp.MustCompile("[A-ZÄÜÖ][A-ZÄÜÖ]+")
-	if rx2rel.MatchString(chars) {
-		rx2 := regexp.MustCompile("([A-ZÄÜÖ]+)([A-ZÄÜÖ][a-zäüöß]+)")
-		subParts := rx2.FindAllStringSubmatch(chars, -1)
+	if RX2REL.MatchString(chars) {
+		subParts := RX2.FindAllStringSubmatch(chars, -1)
 		return subParts[0][1:]
 	}
 	return []string{chars}
