@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	conf        []staticPersistence.JsonConfig
+	conf        []staticPersistence.Config
 	configFile  = "configNew.json"
 	fconfigPath = ""
 )
