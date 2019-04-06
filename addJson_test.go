@@ -119,7 +119,7 @@ func givenAddJson() *addJson {
 
 func givenPageDto() staticIntf.PageDto {
 	img := givenImage()
-	return staticPersistence.NewFilledDto(
+	return staticPersistence.NewPageDto(
 		"titleValue",
 		"descriptionValue",
 		"contentValue",
