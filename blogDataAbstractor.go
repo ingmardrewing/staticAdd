@@ -139,7 +139,7 @@ func (b *BlogDataAbstractor) cleanseFileName() {
 }
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
-	return staticPersistence.NewFilledDto(
+	return staticPersistence.NewPageDto(
 		b.data.title,
 		b.data.excerpt,
 		b.data.content,
