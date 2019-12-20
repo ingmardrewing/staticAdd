@@ -111,12 +111,13 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.excerpt = excerpt
 	b.data.tags = tags
 
-	tpl := `<a href=\"%s\"><img src=\"%s\" srcset=\"%s 2x\" width=\"800\"></a>%s`
+	tpl := `<a href=\"%s\"><img src=\"%s\" srcset=\"%s 2x\" width=\"800\" alt=\"%s\"></a>%s`
 	b.data.content = fmt.Sprintf(
 		tpl,
 		imgUrls[6],
 		imgUrls[4],
 		imgUrls[5],
+		title,
 		mdContent)
 
 	b.data.url = b.generateUrl(titlePlain)
