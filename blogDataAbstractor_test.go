@@ -38,7 +38,7 @@ func TestBlogDataAbstractor(t *testing.T) {
 	}
 
 	actual = dto.Content()
-	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\"></a>`
+	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
 	}
@@ -170,7 +170,7 @@ func TestWriteData(t *testing.T) {
 	"create_date":"` + date + `",
 	"title":"Test Image",
 	"excerpt":"A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing.",
-	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\"></a>",
+	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>",
 	"images_urls":[{
 		"title":"Test Image",
 		"w_85":"https://drewing.de/just/another/path/TestImage-w80-square.png",
