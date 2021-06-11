@@ -24,8 +24,9 @@ var (
 	RX2    = regexp.MustCompile("([A-ZÄÜÖ]+)([A-ZÄÜÖ][a-zäüöß]+)")
 )
 
-func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
+func NewBlogDataAbstractor(deployedStaticAssetsLocation, bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
 	bda := new(BlogDataAbstractor)
+	bda.deployedStaticAssetsLocation = deployedStaticAssetsLocation
 	bda.addDir = addDir
 	bda.postsDir = postsDir
 	bda.defaultExcerpt = defaultExcerpt
@@ -43,7 +44,7 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	bda.data.imageFileName = bda.data.imageFileNameWithoutTags
 
 	imgPath := path.Join(addDir, bda.data.imageFileName)
-	bda.im = NewImageManager(bucket, imgPath)
+	bda.im = NewImageManager(deployedStaticAssetsLocation, bucket, imgPath)
 
 	return bda
 }
@@ -72,14 +73,15 @@ type abstractData struct {
 }
 
 type BlogDataAbstractor struct {
-	data           *abstractData
-	domain         string
-	addDir         string
-	postsDir       string
-	defaultExcerpt string
-	im             ImgManager
-	dto            *staticIntf.PageDto
-	defaultByTag   []staticPersistence.DefaultByTag
+	deployedStaticAssetsLocation string
+	data                         *abstractData
+	domain                       string
+	addDir                       string
+	postsDir                     string
+	defaultExcerpt               string
+	im                           ImgManager
+	dto                          *staticIntf.PageDto
+	defaultByTag                 []staticPersistence.DefaultByTag
 }
 
 func (b *BlogDataAbstractor) ExtractData() {
@@ -202,8 +204,8 @@ func (b *BlogDataAbstractor) stripLinksAndImages(text string) string {
 
 func (b *BlogDataAbstractor) prepareImages() []string {
 	b.im.AddCropImageSize(80)
-	b.im.AddCropImageSize(185)
-	b.im.AddCropImageSize(390)
+	b.im.AddCropImageSize(200)
+	b.im.AddCropImageSize(400)
 	b.im.AddCropImageSize(800)
 
 	b.im.AddImageSize(800)
@@ -277,7 +279,7 @@ func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 }
 
 func (b *BlogDataAbstractor) findImageFileInAddDir() string {
-	imgs := fs.ReadDirEntriesEndingWith(b.addDir, "png", "jpg")
+	imgs := fs.ReadDirEntriesEndingWith(b.addDir, "png", "jpg", "jpeg")
 	for _, i := range imgs {
 		if !strings.Contains(i, "-w") {
 			return i

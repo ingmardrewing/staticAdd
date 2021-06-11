@@ -143,12 +143,13 @@ func TestInferBlogTitleFromFilename(t *testing.T) {
 }
 
 func TestWriteData(t *testing.T) {
+	staticAssetsLoc := "/static-assets/blog"
 	addDir := getTestFileDirPath() + "/testResources/src/add/"
 	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 	domain := "https://drewing.de/blog/"
 
-	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain, nil)
+	bda := NewBlogDataAbstractor(staticAssetsLoc, "drewingde", addDir, postsDir, dExcerpt, domain, nil)
 	bda.im = &imgManagerMock{}
 	bda.ExtractData()
 	dto := bda.GeneratePostDto()
@@ -213,6 +214,7 @@ func givenBlogDataAbstractor() *BlogDataAbstractor {
 	addDir := getTestFileDirPath() + "/testResources/src/add/"
 	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
+	staticAssetsLoc := "/static-assets/blog"
 
 	jsonString := `{"tag":"sketch","excerpt":"excerpt","content":"content"}`
 	var dbt staticPersistence.DefaultByTag
@@ -220,7 +222,8 @@ func givenBlogDataAbstractor() *BlogDataAbstractor {
 
 	dbts := []staticPersistence.DefaultByTag{dbt}
 
-	return NewBlogDataAbstractor("drewingde",
+	return NewBlogDataAbstractor(staticAssetsLoc,
+		"drewingde",
 		addDir,
 		postsDir,
 		dExcerpt,

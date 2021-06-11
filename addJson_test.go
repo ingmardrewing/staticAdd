@@ -13,6 +13,7 @@ import (
 )
 
 func TestNewAddJson(t *testing.T) {
+	staticAssetsLoc := "/static-assets/blog"
 	envName := "TEST_AWS_BUCKET"
 	bucketName := "testBucketName"
 	srcDir := "testResources/src/add"
@@ -21,7 +22,7 @@ func TestNewAddJson(t *testing.T) {
 	url := "https://drewing.de/blog"
 	os.Setenv(envName, bucketName)
 
-	aj := NewAddJson(envName, srcDir, destDir, excerpt, nil, url)
+	aj := NewAddJson(staticAssetsLoc, envName, srcDir, destDir, excerpt, nil, url)
 	if bucketName != aj.awsBucket {
 		t.Error("Expected", aj.awsBucket, "to be", bucketName)
 	}
@@ -106,6 +107,7 @@ func TestCurlData(t *testing.T) {
 }
 
 func givenAddJson() *addJson {
+	staticAssetsLoc := "/static-assets/blog"
 	envName := "TEST_AWS_BUCKET"
 	bucketName := "testBucketName"
 	srcDir := "testResources/src/add"
@@ -114,7 +116,7 @@ func givenAddJson() *addJson {
 	url := "https://drewing.de/blog"
 	os.Setenv(envName, bucketName)
 
-	return NewAddJson(envName, srcDir, destDir, excerpt, nil, url)
+	return NewAddJson(staticAssetsLoc, envName, srcDir, destDir, excerpt, nil, url)
 }
 
 func givenPageDto() staticIntf.PageDto {
