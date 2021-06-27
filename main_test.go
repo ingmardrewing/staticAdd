@@ -17,6 +17,10 @@ func TestMain(m *testing.M) {
 }
 
 func setup() {
+	os.Setenv("BLOG_UPLOAD_SSH_USER", "www.drewing.de")
+	os.Setenv("BLOG_UPLOAD_SSH_PASS", "F0tmmctddacowmaebod2sopeg!")
+	os.Setenv("BLOG_UPLOAD_SSH_SERVER", "ssh.strato.de")
+	os.Setenv("BLOG_UPLOAD_SSH_PORT", "22")
 	os.Setenv("BLOG_CONFIG_DIR", "./testResources/")
 	for _, p := range givenDirPaths() {
 		fs.CreateDir(p)

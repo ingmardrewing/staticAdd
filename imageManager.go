@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -66,15 +65,9 @@ func (i *ImageManager) UploadImages() {
 	if !doUpload {
 		return
 	}
-	su := NewSshUploader(
-		os.Getenv("BLOG_UPLOAD_SSH_USER"),
-		os.Getenv("BLOG_UPLOAD_SSH_PASS"),
-		os.Getenv("BLOG_UPLOAD_SSH_SERVER"),
-		os.Getenv("BLOG_UPLOAD_SSH_PORT"))
 	for _, filepath := range i.uploadimgagepaths {
 		filename := fs.GetFilenameFromPath(filepath)
 		fullPathFromDocRoot := i.getPathFromDocRoot(filename)
-		su.upload(filepath, fullPathFromDocRoot)
 		i.awsimageurls = append(i.awsimageurls, fullPathFromDocRoot)
 	}
 }
@@ -96,7 +89,7 @@ func (i *ImageManager) GetImageUrls() []string {
 	for _, imgUrl := range i.awsimageurls {
 		imgUrls = append(
 			imgUrls,
-			strings.Replace(imgUrl, "%2F", "/", -1))
+			"/static-assets/blog/"+strings.Replace(imgUrl, "%2F", "/", -1))
 	}
 	return imgUrls
 }
