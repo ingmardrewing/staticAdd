@@ -209,7 +209,7 @@ func (b *BlogDataAbstractor) stripLinksAndImages(text string) string {
 func (b *BlogDataAbstractor) prepareImages() []string {
 	b.im.AddCropImageSize(80)
 	b.im.AddCropImageSize(100)
-	b.im.AddCropImageSize(185)
+	b.im.AddCropImageSize(190)
 	b.im.AddCropImageSize(200)
 	b.im.AddCropImageSize(390)
 	b.im.AddCropImageSize(400)
