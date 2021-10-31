@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"runtime"
@@ -33,6 +34,7 @@ func setup() {
 
 func tearDown() {
 	for _, p := range givenDirPaths() {
+		fmt.Print("Removing content in: " + p + "\n")
 		fs.RemoveDirContents(p)
 	}
 

@@ -41,10 +41,6 @@ func TestGenerateDto(t *testing.T) {
 	}
 }
 
-func TestSelectDefaultContentByNameTag(t *testing.T) {
-
-}
-
 func TestWriteToFs(t *testing.T) {
 	aj := givenAddJson()
 	aj.dto = givenPageDto()
@@ -63,8 +59,11 @@ func TestWriteToFs(t *testing.T) {
 	"images_urls":[{
 		"title":"Test Image",
 		"w_85":"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"w_100":"https://drewing.de/just/another/path/TestImage-w100-square.png",
 		"w_190":"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"w_200":"https://drewing.de/just/another/path/TestImage-w200-square.png",
 		"w_390":"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"w_400":"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"w_800":"https://drewing.de/just/another/path/TestImage-w800-square.png",
 		"w_800_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
 		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w1600.png",
@@ -137,8 +136,11 @@ func givenImage() staticIntf.Image {
 	return staticPersistence.NewImageDto(
 		"Test Image",
 		"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"https://drewing.de/just/another/path/TestImage-w100-square.png",
 		"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"https://drewing.de/just/another/path/TestImage-w200-square.png",
 		"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800.png",
 		"https://drewing.de/just/another/path/TestImage-w1600.png",

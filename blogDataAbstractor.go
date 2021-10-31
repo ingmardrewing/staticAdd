@@ -105,11 +105,11 @@ func (b *BlogDataAbstractor) ExtractData() {
 			imgUrls[6],
 			imgUrls[7],
 			imgUrls[8],
-			imgUrls[9]))
+			imgUrls[10]))
 
 	b.data.microThumbUrl = imgUrls[3]
 	b.data.thumbUrl = imgUrls[7]
-	b.data.imgUrl = imgUrls[9]
+	b.data.imgUrl = imgUrls[10]
 
 	mdContent, excerpt, tags := b.readMdData()
 	b.data.mdContent = mdContent
@@ -119,9 +119,9 @@ func (b *BlogDataAbstractor) ExtractData() {
 	tpl := `<a href=\"%s\"><img src=\"%s\" srcset=\"%s 2x\" width=\"800\" alt=\"%s\"></a>%s`
 	b.data.content = fmt.Sprintf(
 		tpl,
-		imgUrls[9],
-		imgUrls[7],
+		imgUrls[10],
 		imgUrls[8],
+		imgUrls[9],
 		title,
 		mdContent)
 
@@ -213,6 +213,7 @@ func (b *BlogDataAbstractor) prepareImages() []string {
 	b.im.AddCropImageSize(390)
 	b.im.AddCropImageSize(400)
 	b.im.AddCropImageSize(800)
+	b.im.AddCropImageSize(1600)
 
 	b.im.AddImageSize(800)
 	b.im.AddImageSize(1600)

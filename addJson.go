@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/ingmardrewing/staticIntf"
@@ -13,8 +12,8 @@ func NewAddJson(deployedStaticAssetsLocation, bucketEnv, srcDir, destDir, excerp
 	defaultByTag []staticPersistence.DefaultByTag,
 	url string) *addJson {
 
-	fmt.Println(fmt.Sprintf("New blog content from content %s\n", srcDir))
-	fmt.Println(fmt.Sprintf("Creating JSON in %s\n", deployedStaticAssetsLocation))
+	//fmt.Println(fmt.Sprintf("New blog content from content %s\n", srcDir))
+	//fmt.Println(fmt.Sprintf("Creating JSON in %s\n", deployedStaticAssetsLocation))
 
 	aj := new(addJson)
 	aj.deployedStaticAssetsLocation = deployedStaticAssetsLocation

@@ -65,6 +65,7 @@ func (i *ImageManager) UploadImages() {
 	if !doUpload {
 		return
 	}
+
 	for _, filepath := range i.uploadimgagepaths {
 		filename := fs.GetFilenameFromPath(filepath)
 		fullPathFromDocRoot := i.getPathFromDocRoot(filename)
