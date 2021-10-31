@@ -105,6 +105,7 @@ func (b *BlogDataAbstractor) ExtractData() {
 			imgUrls[6],
 			imgUrls[7],
 			imgUrls[8],
+			imgUrls[9],
 			imgUrls[10]))
 
 	b.data.microThumbUrl = imgUrls[3]
@@ -121,7 +122,7 @@ func (b *BlogDataAbstractor) ExtractData() {
 		tpl,
 		imgUrls[10],
 		imgUrls[8],
-		imgUrls[9],
+		imgUrls[7],
 		title,
 		mdContent)
 
@@ -286,7 +287,7 @@ func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 }
 
 func (b *BlogDataAbstractor) findImageFileInAddDir() string {
-	imgs := fs.ReadDirEntriesEndingWith(b.addDir, "png", "jpg", "jpeg", "JPG", "JPEG")
+	imgs := fs.ReadDirEntriesEndingWith(b.addDir, "PNG", "png", "jpg", "jpeg", "JPG", "JPEG")
 	for _, i := range imgs {
 		if !strings.Contains(i, "-w") {
 			return i

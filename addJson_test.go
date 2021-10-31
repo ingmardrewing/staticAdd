@@ -33,7 +33,7 @@ func TestGenerateDto(t *testing.T) {
 
 	aj.GenerateDto()
 
-	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" srcset=\"testResources/src/add/testImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
+	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" srcset=\"testResources/src/add/testImage-w1600-cropped.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
 	actual := aj.dto.Content()
 
 	if actual != expected {
@@ -65,6 +65,7 @@ func TestWriteToFs(t *testing.T) {
 		"w_390":"https://drewing.de/just/another/path/TestImage-w390-square.png",
 		"w_400":"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"w_800":"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"w_1600":"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"w_800_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
 		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"max_resolution":"https://drewing.de/just/another/path/TestImage.png"
@@ -142,6 +143,7 @@ func givenImage() staticIntf.Image {
 		"https://drewing.de/just/another/path/TestImage-w390-square.png",
 		"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800.png",
 		"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"https://drewing.de/just/another/path/TestImage.png")

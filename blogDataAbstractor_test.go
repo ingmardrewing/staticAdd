@@ -38,7 +38,7 @@ func TestBlogDataAbstractor(t *testing.T) {
 	}
 
 	actual = dto.Content()
-	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
+	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600-square.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
 	}
@@ -171,7 +171,7 @@ func TestWriteData(t *testing.T) {
 	"create_date":"` + date + `",
 	"title":"Test Image",
 	"excerpt":"A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing.",
-	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>",
+	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600-square.png 2x\" width=\"800\" alt=\"Test Image\"></a>",
 	"images_urls":[{
 		"title":"Test Image",
 		"w_85":"https://drewing.de/just/another/path/TestImage-w80-square.png",
@@ -181,8 +181,9 @@ func TestWriteData(t *testing.T) {
 		"w_390":"https://drewing.de/just/another/path/TestImage-w390-square.png",
 		"w_400":"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"w_800":"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"w_1600":"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"w_800_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
-		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
+		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"max_resolution":"https://drewing.de/just/another/path/TestImage.png"
 	}]
 }`
@@ -205,7 +206,7 @@ func (i *imgManagerMock) GetImageUrls() []string {
 		"https://drewing.de/just/another/path/TestImage-w390-square.png",
 		"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800-square.png",
-		"https://drewing.de/just/another/path/TestImage-w800.png",
+		"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800.png",
 		"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"https://drewing.de/just/another/path/TestImage.png"}
