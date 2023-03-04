@@ -1,5 +1,6 @@
 [
   {
+    "deployedStaticAssetsLocation": "/static-assets/blog/",
     "domain": "drewing.de",
     "addPostDir": "testResources/src/add/",
     "src": [

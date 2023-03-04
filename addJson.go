@@ -8,10 +8,15 @@ import (
 	"github.com/ingmardrewing/staticUtil"
 )
 
-func NewAddJson(bucketEnv, srcDir, destDir, excerpt string,
+func NewAddJson(deployedStaticAssetsLocation, bucketEnv, srcDir, destDir, excerpt string,
 	defaultByTag []staticPersistence.DefaultByTag,
 	url string) *addJson {
+
+	//fmt.Println(fmt.Sprintf("New blog content from content %s\n", srcDir))
+	//fmt.Println(fmt.Sprintf("Creating JSON in %s\n", deployedStaticAssetsLocation))
+
 	aj := new(addJson)
+	aj.deployedStaticAssetsLocation = deployedStaticAssetsLocation
 	aj.awsBucket = os.Getenv(bucketEnv)
 	aj.srcDir = srcDir
 	aj.destDir = destDir
@@ -22,20 +27,22 @@ func NewAddJson(bucketEnv, srcDir, destDir, excerpt string,
 }
 
 type addJson struct {
-	awsBucket  string
-	srcDir     string
-	destDir    string
-	excerpt    string
-	url        string
-	filename   string
-	titlePlain string
-	dto        staticIntf.PageDto
-	dbt        []staticPersistence.DefaultByTag
-	tags       []string
+	deployedStaticAssetsLocation string
+	awsBucket                    string
+	srcDir                       string
+	destDir                      string
+	excerpt                      string
+	url                          string
+	filename                     string
+	titlePlain                   string
+	dto                          staticIntf.PageDto
+	dbt                          []staticPersistence.DefaultByTag
+	tags                         []string
 }
 
 func (a *addJson) GenerateDto() {
 	bda := NewBlogDataAbstractor(
+		a.deployedStaticAssetsLocation,
 		a.awsBucket,
 		a.srcDir,
 		a.destDir,

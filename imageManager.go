@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ingmardrewing/aws"
 	"github.com/ingmardrewing/fs"
 	"github.com/ingmardrewing/img"
 	"github.com/ingmardrewing/staticUtil"
@@ -28,20 +27,22 @@ type ImgManager interface {
 // Upload images to the given awsbucket using
 // environmental data as required by the aws
 // packages
-func NewImageManager(awsbucket, sourceimagepath string) *ImageManager {
+func NewImageManager(deployedStaticAssetsLocation, awsbucket, sourceimagepath string) *ImageManager {
 	im := new(ImageManager)
+	im.deployedStaticAssetsLocation = deployedStaticAssetsLocation
 	im.awsbucket = awsbucket
 	im.sourceimagepath = sourceimagepath
 	return im
 }
 
 type ImageManager struct {
-	sourceimagepath   string
-	uploadimgagepaths []string
-	awsimageurls      []string
-	imagesizes        []int
-	cropimagesizes    []int
-	awsbucket         string
+	deployedStaticAssetsLocation string
+	sourceimagepath              string
+	uploadimgagepaths            []string
+	awsimageurls                 []string
+	imagesizes                   []int
+	cropimagesizes               []int
+	awsbucket                    string
 }
 
 func (i *ImageManager) PrepareImages() {
@@ -64,16 +65,16 @@ func (i *ImageManager) UploadImages() {
 	if !doUpload {
 		return
 	}
+
 	for _, filepath := range i.uploadimgagepaths {
 		filename := fs.GetFilenameFromPath(filepath)
-		key := i.getS3Key(filename)
-		url := aws.UploadFile(filepath, i.awsbucket, key)
-		i.awsimageurls = append(i.awsimageurls, url)
+		fullPathFromDocRoot := i.getPathFromDocRoot(filename)
+		i.awsimageurls = append(i.awsimageurls, fullPathFromDocRoot)
 	}
 }
 
-func (i *ImageManager) getS3Key(filename string) string {
-	return "blog/" + staticUtil.GenerateDatePath() + filename
+func (i *ImageManager) getPathFromDocRoot(filename string) string {
+	return i.deployedStaticAssetsLocation + staticUtil.GenerateDatePath() + filename
 }
 
 func (i *ImageManager) GetImageUrls() []string {
@@ -89,7 +90,7 @@ func (i *ImageManager) GetImageUrls() []string {
 	for _, imgUrl := range i.awsimageurls {
 		imgUrls = append(
 			imgUrls,
-			strings.Replace(imgUrl, "%2F", "/", -1))
+			"/static-assets/blog/"+strings.Replace(imgUrl, "%2F", "/", -1))
 	}
 	return imgUrls
 }

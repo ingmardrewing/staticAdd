@@ -24,8 +24,9 @@ var (
 	RX2    = regexp.MustCompile("([A-ZÄÜÖ]+)([A-ZÄÜÖ][a-zäüöß]+)")
 )
 
-func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
+func NewBlogDataAbstractor(deployedStaticAssetsLocation, bucket, addDir, postsDir, defaultExcerpt, domain string, dbt []staticPersistence.DefaultByTag) *BlogDataAbstractor {
 	bda := new(BlogDataAbstractor)
+	bda.deployedStaticAssetsLocation = deployedStaticAssetsLocation
 	bda.addDir = addDir
 	bda.postsDir = postsDir
 	bda.defaultExcerpt = defaultExcerpt
@@ -43,7 +44,7 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	bda.data.imageFileName = bda.data.imageFileNameWithoutTags
 
 	imgPath := path.Join(addDir, bda.data.imageFileName)
-	bda.im = NewImageManager(bucket, imgPath)
+	bda.im = NewImageManager(deployedStaticAssetsLocation, bucket, imgPath)
 
 	return bda
 }
@@ -72,14 +73,15 @@ type abstractData struct {
 }
 
 type BlogDataAbstractor struct {
-	data           *abstractData
-	domain         string
-	addDir         string
-	postsDir       string
-	defaultExcerpt string
-	im             ImgManager
-	dto            *staticIntf.PageDto
-	defaultByTag   []staticPersistence.DefaultByTag
+	deployedStaticAssetsLocation string
+	data                         *abstractData
+	domain                       string
+	addDir                       string
+	postsDir                     string
+	defaultExcerpt               string
+	im                           ImgManager
+	dto                          *staticIntf.PageDto
+	defaultByTag                 []staticPersistence.DefaultByTag
 }
 
 func (b *BlogDataAbstractor) ExtractData() {
@@ -100,11 +102,15 @@ func (b *BlogDataAbstractor) ExtractData() {
 			imgUrls[3],
 			imgUrls[4],
 			imgUrls[5],
-			imgUrls[6]))
+			imgUrls[6],
+			imgUrls[7],
+			imgUrls[8],
+			imgUrls[9],
+			imgUrls[10]))
 
-	b.data.microThumbUrl = imgUrls[1]
-	b.data.thumbUrl = imgUrls[2]
-	b.data.imgUrl = imgUrls[3]
+	b.data.microThumbUrl = imgUrls[3]
+	b.data.thumbUrl = imgUrls[7]
+	b.data.imgUrl = imgUrls[10]
 
 	mdContent, excerpt, tags := b.readMdData()
 	b.data.mdContent = mdContent
@@ -114,9 +120,9 @@ func (b *BlogDataAbstractor) ExtractData() {
 	tpl := `<a href=\"%s\"><img src=\"%s\" srcset=\"%s 2x\" width=\"800\" alt=\"%s\"></a>%s`
 	b.data.content = fmt.Sprintf(
 		tpl,
-		imgUrls[6],
-		imgUrls[4],
-		imgUrls[5],
+		imgUrls[10],
+		imgUrls[8],
+		imgUrls[7],
 		title,
 		mdContent)
 
@@ -202,9 +208,13 @@ func (b *BlogDataAbstractor) stripLinksAndImages(text string) string {
 
 func (b *BlogDataAbstractor) prepareImages() []string {
 	b.im.AddCropImageSize(80)
-	b.im.AddCropImageSize(185)
+	b.im.AddCropImageSize(100)
+	b.im.AddCropImageSize(190)
+	b.im.AddCropImageSize(200)
 	b.im.AddCropImageSize(390)
+	b.im.AddCropImageSize(400)
 	b.im.AddCropImageSize(800)
+	b.im.AddCropImageSize(1600)
 
 	b.im.AddImageSize(800)
 	b.im.AddImageSize(1600)
@@ -277,7 +287,7 @@ func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 }
 
 func (b *BlogDataAbstractor) findImageFileInAddDir() string {
-	imgs := fs.ReadDirEntriesEndingWith(b.addDir, "png", "jpg")
+	imgs := fs.ReadDirEntriesEndingWith(b.addDir, "PNG", "png", "jpg", "jpeg", "JPG", "JPEG")
 	for _, i := range imgs {
 		if !strings.Contains(i, "-w") {
 			return i

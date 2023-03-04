@@ -13,6 +13,7 @@ import (
 )
 
 func TestNewAddJson(t *testing.T) {
+	staticAssetsLoc := "/static-assets/blog"
 	envName := "TEST_AWS_BUCKET"
 	bucketName := "testBucketName"
 	srcDir := "testResources/src/add"
@@ -21,7 +22,7 @@ func TestNewAddJson(t *testing.T) {
 	url := "https://drewing.de/blog"
 	os.Setenv(envName, bucketName)
 
-	aj := NewAddJson(envName, srcDir, destDir, excerpt, nil, url)
+	aj := NewAddJson(staticAssetsLoc, envName, srcDir, destDir, excerpt, nil, url)
 	if bucketName != aj.awsBucket {
 		t.Error("Expected", aj.awsBucket, "to be", bucketName)
 	}
@@ -32,16 +33,12 @@ func TestGenerateDto(t *testing.T) {
 
 	aj.GenerateDto()
 
-	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" srcset=\"testResources/src/add/testImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
+	expected := `<a href=\"testResources/src/add/testImage.png\"><img src=\"testResources/src/add/testImage-w800.png\" srcset=\"testResources/src/add/testImage-w1600-cropped.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
 	actual := aj.dto.Content()
 
 	if actual != expected {
 		t.Error("Expected\n", expected, "\nbut got\n", actual)
 	}
-}
-
-func TestSelectDefaultContentByNameTag(t *testing.T) {
-
 }
 
 func TestWriteToFs(t *testing.T) {
@@ -62,9 +59,13 @@ func TestWriteToFs(t *testing.T) {
 	"images_urls":[{
 		"title":"Test Image",
 		"w_85":"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"w_100":"https://drewing.de/just/another/path/TestImage-w100-square.png",
 		"w_190":"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"w_200":"https://drewing.de/just/another/path/TestImage-w200-square.png",
 		"w_390":"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"w_400":"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"w_800":"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"w_1600":"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"w_800_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
 		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"max_resolution":"https://drewing.de/just/another/path/TestImage.png"
@@ -106,6 +107,7 @@ func TestCurlData(t *testing.T) {
 }
 
 func givenAddJson() *addJson {
+	staticAssetsLoc := "/static-assets/blog"
 	envName := "TEST_AWS_BUCKET"
 	bucketName := "testBucketName"
 	srcDir := "testResources/src/add"
@@ -114,7 +116,7 @@ func givenAddJson() *addJson {
 	url := "https://drewing.de/blog"
 	os.Setenv(envName, bucketName)
 
-	return NewAddJson(envName, srcDir, destDir, excerpt, nil, url)
+	return NewAddJson(staticAssetsLoc, envName, srcDir, destDir, excerpt, nil, url)
 }
 
 func givenPageDto() staticIntf.PageDto {
@@ -135,9 +137,13 @@ func givenImage() staticIntf.Image {
 	return staticPersistence.NewImageDto(
 		"Test Image",
 		"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"https://drewing.de/just/another/path/TestImage-w100-square.png",
 		"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"https://drewing.de/just/another/path/TestImage-w200-square.png",
 		"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800.png",
 		"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"https://drewing.de/just/another/path/TestImage.png")

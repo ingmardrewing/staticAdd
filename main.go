@@ -15,7 +15,7 @@ import (
 
 var (
 	conf        []staticPersistence.Config
-	configFile  = "configNew.json"
+	configFile  = "config.json"
 	fconfigPath = ""
 )
 
@@ -33,10 +33,9 @@ func readConf() {
 func main() {
 	readConf()
 
-	aj := NewAddJson("AWS_BUCKET", conf[0].AddPostDir, conf[0].WritePostDir, conf[0].DefaultMeta.BlogExcerpt, conf[0].DefaultMeta.DefaultByTags, "https://drewing.de/blog/")
+	aj := NewAddJson(conf[0].DeployedStaticAssetsLocation, "AWS_BUCKET", conf[0].AddPostDir, conf[0].WritePostDir, conf[0].DefaultMeta.BlogExcerpt, conf[0].DefaultMeta.DefaultByTags, "https://drewing.de/blog/")
 	aj.GenerateDto()
 	aj.WriteToFs()
-	fs.RemoveDirContents(conf[0].AddPostDir)
 
 	title, desc, link, imgUrl := aj.CurlData()
 

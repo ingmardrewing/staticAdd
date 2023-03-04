@@ -38,7 +38,7 @@ func TestBlogDataAbstractor(t *testing.T) {
 	}
 
 	actual = dto.Content()
-	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
+	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600-square.png 2x\" width=\"800\" alt=\"Test Image\"></a>`
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
 	}
@@ -143,12 +143,13 @@ func TestInferBlogTitleFromFilename(t *testing.T) {
 }
 
 func TestWriteData(t *testing.T) {
+	staticAssetsLoc := "/static-assets/blog"
 	addDir := getTestFileDirPath() + "/testResources/src/add/"
 	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 	domain := "https://drewing.de/blog/"
 
-	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain, nil)
+	bda := NewBlogDataAbstractor(staticAssetsLoc, "drewingde", addDir, postsDir, dExcerpt, domain, nil)
 	bda.im = &imgManagerMock{}
 	bda.ExtractData()
 	dto := bda.GeneratePostDto()
@@ -170,13 +171,17 @@ func TestWriteData(t *testing.T) {
 	"create_date":"` + date + `",
 	"title":"Test Image",
 	"excerpt":"A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing.",
-	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600.png 2x\" width=\"800\" alt=\"Test Image\"></a>",
+	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" srcset=\"https://drewing.de/just/another/path/TestImage-w1600-square.png 2x\" width=\"800\" alt=\"Test Image\"></a>",
 	"images_urls":[{
 		"title":"Test Image",
 		"w_85":"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"w_100":"https://drewing.de/just/another/path/TestImage-w100-square.png",
 		"w_190":"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"w_200":"https://drewing.de/just/another/path/TestImage-w200-square.png",
 		"w_390":"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"w_400":"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"w_800":"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"w_1600":"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"w_800_portrait":"https://drewing.de/just/another/path/TestImage-w800.png",
 		"w_1600_portrait":"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"max_resolution":"https://drewing.de/just/another/path/TestImage.png"
@@ -195,9 +200,13 @@ func (i *imgManagerMock) UploadImages()  {}
 func (i *imgManagerMock) GetImageUrls() []string {
 	return []string{
 		"https://drewing.de/just/another/path/TestImage-w80-square.png",
+		"https://drewing.de/just/another/path/TestImage-w100-square.png",
 		"https://drewing.de/just/another/path/TestImage-w190-square.png",
+		"https://drewing.de/just/another/path/TestImage-w200-square.png",
 		"https://drewing.de/just/another/path/TestImage-w390-square.png",
+		"https://drewing.de/just/another/path/TestImage-w400-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800-square.png",
+		"https://drewing.de/just/another/path/TestImage-w1600-square.png",
 		"https://drewing.de/just/another/path/TestImage-w800.png",
 		"https://drewing.de/just/another/path/TestImage-w1600.png",
 		"https://drewing.de/just/another/path/TestImage.png"}
@@ -213,6 +222,7 @@ func givenBlogDataAbstractor() *BlogDataAbstractor {
 	addDir := getTestFileDirPath() + "/testResources/src/add/"
 	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
 	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
+	staticAssetsLoc := "/static-assets/blog"
 
 	jsonString := `{"tag":"sketch","excerpt":"excerpt","content":"content"}`
 	var dbt staticPersistence.DefaultByTag
@@ -220,7 +230,8 @@ func givenBlogDataAbstractor() *BlogDataAbstractor {
 
 	dbts := []staticPersistence.DefaultByTag{dbt}
 
-	return NewBlogDataAbstractor("drewingde",
+	return NewBlogDataAbstractor(staticAssetsLoc,
+		"drewingde",
 		addDir,
 		postsDir,
 		dExcerpt,
